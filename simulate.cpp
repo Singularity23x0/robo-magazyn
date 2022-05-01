@@ -160,7 +160,7 @@ vector<Position> getNeighbors(Position currentPosition)
     // TODO: implement
 }
 
-vector<vector<Move>> simulateOrderCompletion(int **magazine, Position robotPositions[], set<int> orders[]) 
+vector<vector<Move>> simulateOrderCompletion(int **magazine, Position robotPositions[], set<int> orders[])
 {
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
