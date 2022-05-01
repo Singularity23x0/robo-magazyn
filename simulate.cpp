@@ -91,30 +91,36 @@ struct DFSStack
 struct Robot
 {
     int id;
-    Position *positions;
+    int **magazine;
+    Position *robotsPositions;
     set<int> order;
     DFSStack dfsStack;
 
-    void init(int id, Position *positions, set<int> order) 
+    void init(int id, int **magazine, Position *robotsPositions, set<int> order) 
     {
         this->id = id;
+        this->magazine = magazine;
+        this->robotsPositions = robotsPositions;
         this->order = order;
-        this->positions = positions;
-        Position position = getPosition();
-        dfsStack.init(position);
-        // TODO: add base level to dfs stack
+        dfsStack.init(getPosition());
     }
 
     Position getPosition() 
     {
-        return positions[id];
+        return robotsPositions[id];
     }
 
-    bool isComplete() {
+    void setPosition(Position position)
+    {
+        robotsPositions[id] = position;
+    }
+
+    bool completedOrder() 
+    {
         return order.empty();
     }
 
-    Move makeMove(int **magazine, Position robotPositions[]) {
+    Move makeMove() {
         Move move;
         Position currentPosition=getPosition(), nextPosition=currentPosition;
         int availableProduct = magazine[currentPosition.row][currentPosition.col];
@@ -139,7 +145,7 @@ struct Robot
             // TODO: is there any available neighbor ? go there : do the WAIT action; 
         }
 
-        robotPositions[id] = nextPosition;
+        setPosition(nextPosition);
         return move;
     }
 };
@@ -167,20 +173,20 @@ vector<vector<Move>> simulateOrderCompletion(int **magazine, Position robotPosit
     bool simulationComplete = false;
     ORDER_ITERATOR
     {
-        dfs[i].init(i, robotPositions, orders[i]);
+        dfs[i].init(i, magazine, robotPositions, orders[i]);
     }
     while(!simulationComplete)
     {
         // simulating all moves
         ORDER_ITERATOR
         {
-            simulation[i].push_back(dfs[i].makeMove(magazine, robotPositions));
+            simulation[i].push_back(dfs[i].makeMove());
         }
         // checking if all simulations are complete
         simulationComplete = true;
         ORDER_ITERATOR
         {
-            simulationComplete = simulationComplete && dfs[i].isComplete();
+            simulationComplete = simulationComplete && dfs[i].completedOrder();
         }
     }
 
