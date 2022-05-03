@@ -8,3 +8,9 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+p {
+    color: #355070;
+    font-size: 50px;
+    margin-left: 30px;
+}

@@ -20,16 +20,19 @@ const ROBOT_COUNT = solution[0].length
 
 let SCALE;
 
+let frameLabel;
+
 function setup() {
     createCanvas(.8 * windowHeight * COL_COUNT / ROW_COUNT, .8 * windowHeight)
     SCALE = height / ROW_COUNT - 5
     frameRate(1)
+    frameLabel = createP(0)
 }
 
 let frame = 0
 
-const BG_COLOR = "#355070"
-const STROKE_COLOR = "#6881A4"
+const BOARD_COLOR = "#355070"
+const BG_COLOR = "#6881A4"
 
 const colors = ["#44A0C1", "#47D9B2", "#96608E", "#F9F871"]
 
@@ -38,17 +41,18 @@ function draw() {
     if (frame == solution.length) {
         frame = 0;
         orders_copy = JSON.parse(JSON.stringify(orders));
-    } 
+    }
 
     const robot_positions = solution[frame];
+    frameLabel.elt.innerHTML = frame
 
-    stroke(STROKE_COLOR)
+    stroke(BG_COLOR)
 
     for (let i = 0; i < COL_COUNT; i++) {
         for (let j = 0; j < ROW_COUNT; j++) {
-            fill(BG_COLOR)
+            fill(BOARD_COLOR)
             strokeWeight(3)
-            stroke(STROKE_COLOR)
+            stroke(BG_COLOR)
             rect(i * SCALE, j * SCALE, SCALE, SCALE)
 
             noStroke()
