@@ -20,50 +20,53 @@ const ROBOT_COUNT = solution[0].length
 let SCALE;
 
 function setup() {
-    createCanvas(windowHeight * COL_COUNT / ROW_COUNT, windowHeight)
-    SCALE = height / ROW_COUNT
+    createCanvas(.8 * windowHeight * COL_COUNT / ROW_COUNT, .8 * windowHeight)
+    SCALE = height / ROW_COUNT - 5
     frameRate(1)
 }
 
 let frame = 0
-const colors = ["#49BEAA", "#ef767a", "#456990", "#EEB868"]
+
+const BG_COLOR = "#355070"
+const STROKE_COLOR = "#6881A4"
+
+const colors = ["#44A0C1", "#47D9B2", "#96608E",  "#F9F871"]
 
 function draw() {
-
-    background(colors[0])
 
     const robot_positions = solution[frame];
     frame++;
     if (frame == solution.length) frame = 0;
 
+    stroke(STROKE_COLOR)
+
     for (let i = 0; i < COL_COUNT; i++) {
         for (let j = 0; j < ROW_COUNT; j++) {
-            noFill()
+            fill(BG_COLOR)
             strokeWeight(3)
-            stroke(255)
+            stroke(STROKE_COLOR)
             rect(i * SCALE, j * SCALE, SCALE, SCALE)
 
+            noStroke()
             // draw robots
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
                 let robot_position = robot_positions[robot_i]
                 if (robot_position[0] == i && robot_position[1] == j) {
-                    fill(colors[robot_i + 1])
-                    ellipseMode(CORNER)
-                    strokeWeight(2)
-                    circle(i * SCALE, j * SCALE, SCALE)
+                    fill(colors[robot_i])
+                    circle((i+.5) * SCALE, (j+.5) * SCALE, .8*SCALE)
                 }
             }
 
             // draw products
-            let robot_goal_count = 0
+            let small_circles_count = 0
+            let diameter = SCALE / ROBOT_COUNT - 2
+
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
-                let diameter = SCALE / ROBOT_COUNT
 
                 if (orders[robot_i].indexOf(board[i][j]) != -1) {
-                    fill(colors[robot_i + 1])
-                    strokeWeight(1)
-                    circle(i * SCALE + robot_goal_count * diameter, (j + 1) * SCALE - diameter, diameter)
-                    robot_goal_count++
+                    fill(colors[robot_i])
+                    circle(ROBOT_COUNT+i * SCALE + (small_circles_count+.5) * (diameter), -ROBOT_COUNT + (j + 1) * SCALE - diameter/2, diameter)
+                    small_circles_count++
                 }
             }
         }
