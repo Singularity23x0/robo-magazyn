@@ -8,6 +8,7 @@ const ROW_COUNT = board.length
 const COL_COUNT = board[0].length
 
 const orders = [[1, 3, 5], [2, 5], [1, 5]]
+let orders_copy = JSON.parse(JSON.stringify(orders));
 
 const solution = [
     [[1, 1], [7, 2], [2, 1]],
@@ -30,13 +31,16 @@ let frame = 0
 const BG_COLOR = "#355070"
 const STROKE_COLOR = "#6881A4"
 
-const colors = ["#44A0C1", "#47D9B2", "#96608E",  "#F9F871"]
+const colors = ["#44A0C1", "#47D9B2", "#96608E", "#F9F871"]
 
 function draw() {
 
+    if (frame == solution.length) {
+        frame = 0;
+        orders_copy = JSON.parse(JSON.stringify(orders));
+    } 
+
     const robot_positions = solution[frame];
-    frame++;
-    if (frame == solution.length) frame = 0;
 
     stroke(STROKE_COLOR)
 
@@ -53,7 +57,12 @@ function draw() {
                 let robot_position = robot_positions[robot_i]
                 if (robot_position[0] == i && robot_position[1] == j) {
                     fill(colors[robot_i])
-                    circle((i+.5) * SCALE, (j+.5) * SCALE, .8*SCALE)
+                    circle((i + .5) * SCALE, (j + .5) * SCALE, .8 * SCALE)
+
+                    let product_index = orders_copy[robot_i].indexOf(board[i][j])
+                    if (product_index != -1) {
+                        orders_copy[robot_i].splice(product_index, 1)
+                    }
                 }
             }
 
@@ -63,12 +72,15 @@ function draw() {
 
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
 
-                if (orders[robot_i].indexOf(board[i][j]) != -1) {
+                if (orders_copy[robot_i].indexOf(board[i][j]) != -1) {
                     fill(colors[robot_i])
-                    circle(ROBOT_COUNT+i * SCALE + (small_circles_count+.5) * (diameter), -ROBOT_COUNT + (j + 1) * SCALE - diameter/2, diameter)
+                    circle(ROBOT_COUNT + i * SCALE + (small_circles_count + .5) * (diameter), -ROBOT_COUNT + (j + 1) * SCALE - diameter / 2, diameter)
                     small_circles_count++
                 }
             }
         }
+
     }
+
+    frame++;
 }
