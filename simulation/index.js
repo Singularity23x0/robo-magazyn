@@ -4,7 +4,7 @@ let frameLabel, frame = -1;
 
 const BOARD_COLOR = "#355070"
 const BG_COLOR = "#6881A4"
-const colors = ["#44A0C1", "#47D9B2", "#96608E", "#F9F871"]
+const colors = ["#f87575", "#b9e6ff", "#5c95ff", "#7e6c6c", "eab464"]
 
 function setup() {
     fetch("./result.json")
@@ -44,10 +44,9 @@ function draw() {
         orders_copy = JSON.parse(JSON.stringify(orders));
     }
 
-    const robot_positions = solution[frame];
     frameLabel.elt.innerHTML = frame
 
-    stroke(BG_COLOR)
+    const robot_positions = solution[frame];
 
     for (let i = 0; i < COL_COUNT; i++) {
         for (let j = 0; j < ROW_COUNT; j++) {
@@ -64,7 +63,7 @@ function draw() {
                 if (robot_position[0][0] == i && robot_position[0][1] == j) {
                     fill(colors[robot_i])
                     circle((i + .5) * SCALE, (j + .5) * SCALE, .8 * SCALE)
-                    
+
                     // take product
                     if (robot_position[1] === "TAKE") {
                         let product_index = orders_copy[robot_i].indexOf(board[i][j])
