@@ -61,13 +61,16 @@ function draw() {
             // draw robots
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
                 let robot_position = robot_positions[robot_i]
-                if (robot_position[0] == i && robot_position[1] == j) {
+                if (robot_position[0][0] == i && robot_position[0][1] == j) {
                     fill(colors[robot_i])
                     circle((i + .5) * SCALE, (j + .5) * SCALE, .8 * SCALE)
-
-                    let product_index = orders_copy[robot_i].indexOf(board[i][j])
-                    if (product_index != -1) {
-                        orders_copy[robot_i].splice(product_index, 1)
+                    
+                    // take product
+                    if (robot_position[1] === "TAKE") {
+                        let product_index = orders_copy[robot_i].indexOf(board[i][j])
+                        if (product_index != -1) {
+                            orders_copy[robot_i].splice(product_index, 1)
+                        }
                     }
                 }
             }
