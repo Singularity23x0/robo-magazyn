@@ -1,42 +1,43 @@
-const board = Array(10).fill().map(_ => Array(8))
-
-board[6][2] = 5
-board[7][2] = 1
-board[3][2] = 3
-
-const ROW_COUNT = board.length
-const COL_COUNT = board[0].length
-
-const orders = [[1, 3, 5], [2, 5], [1, 5]]
-let orders_copy = JSON.parse(JSON.stringify(orders));
-
-const solution = [
-    [[1, 1], [7, 2], [2, 1]],
-    [[1, 2], [6, 2], [3, 1]],
-    [[2, 2], [5, 2], [3, 2]],
-]
-
-const ROBOT_COUNT = solution[0].length
-
-let SCALE;
-
-let frameLabel;
-
-function setup() {
-    createCanvas(.8 * windowHeight * COL_COUNT / ROW_COUNT, .8 * windowHeight)
-    SCALE = height / ROW_COUNT - 5
-    frameRate(1)
-    frameLabel = createP(0)
-}
-
-let frame = 0
+let result, board, orders, orders_copy, solution
+let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
+let frameLabel, frame = -1;
 
 const BOARD_COLOR = "#355070"
 const BG_COLOR = "#6881A4"
-
 const colors = ["#44A0C1", "#47D9B2", "#96608E", "#F9F871"]
 
+function setup() {
+    fetch("./result.json")
+        .then(response => {
+            return response.json();
+        })
+        .then(result => {
+            orders = result["orders"]
+            orders_copy = JSON.parse(JSON.stringify(orders));
+            board = result["board"]
+            solution = result["solution"]
+
+            ROBOT_COUNT = solution[0].length
+            ROW_COUNT = board.length
+            COL_COUNT = board[0].length
+
+            createCanvas(.8 * windowHeight * COL_COUNT / ROW_COUNT, .8 * windowHeight)
+            SCALE = height / ROW_COUNT - 5
+            frameRate(1)
+            frameLabel = createP(0)
+            frame = 0
+
+            loop()
+        }
+        );
+}
+
 function draw() {
+
+    if (frame < 0) {
+        noLoop();
+        return;
+    }
 
     if (frame == solution.length) {
         frame = 0;
@@ -56,6 +57,7 @@ function draw() {
             rect(i * SCALE, j * SCALE, SCALE, SCALE)
 
             noStroke()
+
             // draw robots
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
                 let robot_position = robot_positions[robot_i]
