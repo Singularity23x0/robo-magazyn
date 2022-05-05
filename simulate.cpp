@@ -15,6 +15,10 @@ enum Action
 struct Position
 {
     int row, col;
+    bool equals(Position other)
+    {
+        return row == other.row && col == other.col;
+    }
 };
 
 
@@ -82,9 +86,29 @@ struct DFSStack
         return visited[field.row][field.col] >= marker;
     }
 
-    bool topLevelEmpty()
+    bool initiateLevelReturn()
     {
+        safetyReset();
         return topLevel.empty();
+    }
+
+    void safetyReset()
+    {
+        if(topLevel.empty() && levels.empty())
+        {
+            reset(topLevel.position);
+        }
+    }
+
+    void returnOneLevel() 
+    {
+        topLevel = levels.back();
+        levels.pop_back();
+    }
+
+    Position previousLevelPosition() 
+    {
+        return levels.back().position;
     }
 };
 
@@ -94,6 +118,7 @@ struct Robot
     int **magazine;
     Position *robotsPositions;
     set<int> order;
+    bool orderComplete = false;
     DFSStack dfsStack;
 
     void init(int id, int **magazine, Position *robotsPositions, set<int> order) 
@@ -115,9 +140,18 @@ struct Robot
         robotsPositions[id] = position;
     }
 
-    bool completedOrder() 
+    bool orderTurnedIn() 
     {
-        return order.empty();
+        return orderComplete && order.empty();
+    }
+
+    void sendToTurnInIfComplete()
+    {
+        if(!orderComplete && order.empty())
+        {
+            orderComplete = true;
+            order.insert(ORDER_TURN_IN_STATION);
+        }
     }
 
     Move makeMove() {
@@ -136,9 +170,19 @@ struct Robot
             // resetting dfs
             dfsStack.reset(currentPosition);
         }
-        else if (dfsStack.topLevelEmpty()) 
+        else if (dfsStack.initiateLevelReturn()) 
         {
-            // TODO: can return to previous ? return : do the WAIT action;
+            Position target = dfsStack.previousLevelPosition();
+            if(isPositionTaken(target, robotsPositions))
+            {
+                move.action = WAIT;
+            }
+            else 
+            {
+                nextPosition = target;
+                move.action = defineMove(currentPosition, nextPosition);
+                dfsStack.returnOneLevel();
+            }
         }
         else 
         {
@@ -146,9 +190,20 @@ struct Robot
         }
 
         setPosition(nextPosition);
+        sendToTurnInIfComplete();
         return move;
     }
 };
+
+bool isPositionTaken(Position position, Position *robotsPositions)
+{
+    ORDER_ITERATOR
+    {
+        if(robotsPositions[i].equals(position))
+            return true;
+    }
+    return false;
+}
 
 void setRobotsAmount(int to) 
 {
@@ -162,6 +217,11 @@ void setMagazineSize(int height, int width)
 }
 
 vector<Position> getNeighbors(Position currentPosition)
+{
+    // TODO: implement
+}
+
+Action defineMove(Position from, Position to)
 {
     // TODO: implement
 }
@@ -186,7 +246,7 @@ vector<vector<Move>> simulateOrderCompletion(int **magazine, Position robotPosit
         simulationComplete = true;
         ORDER_ITERATOR
         {
-            simulationComplete = simulationComplete && dfs[i].completedOrder();
+            simulationComplete = simulationComplete && dfs[i].orderTurnedIn();
         }
     }
 
