@@ -5,5 +5,7 @@
 - run the following commands
 `
 g++ main.cpp simulate.cpp -o a.out
-./a.exe
+`
+`
+./a.out
 `
