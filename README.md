@@ -11,5 +11,4 @@ g++ main.cpp simulate.cpp -o a.out
 ./a.out
 `
 
-
 **WARNING: Make sure u have gcc installed.**
