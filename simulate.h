@@ -9,15 +9,28 @@
 int ORDERS_AMOUNT = 1;
 int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
+int ORDER_TURN_IN_STATION = -1;
 
-enum Action;
-struct Move;
-struct Robot;
-struct Position;
-struct DFSStack;
-struct DFSLevel;
+enum Action
+{
+    WAIT,
+    GO_N,
+    GO_E,
+    GO_S,
+    GO_W,
+    TAKE
+};
+struct Position
+{
+    int row, col;
+};
+struct Move
+{
+    Position position;
+    Action action;
+};
 
 void setRobotsAmount(int to);
 void setMagazineSize(int height, int width);
-vector<vector<Move>> simulateOrderCompletion(int **magazine, int robotPositions[][2], set<int> orders[]);
+vector<vector<Move>> simulate(vector<vector<int>> magazine, Position robotPositions[], set<int> orders[]);
 
