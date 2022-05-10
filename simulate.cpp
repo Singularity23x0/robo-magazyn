@@ -206,7 +206,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    cout<<id<<": "<<"{"<<move.action<<", "<<move.position.row<<", "<<move.position.col<<"}"<<endl;
+    // cout<<id<<": "<<"{"<<move.action<<", "<<move.position.row<<", "<<move.position.col<<"}"<<endl;
     return move;
 }
 
