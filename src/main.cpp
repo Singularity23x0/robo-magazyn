@@ -1,12 +1,20 @@
 #include <iostream>
 #include <glog/logging.h>
+#include <nlohmann/json.hpp>
+
 #include "simulate.h"
 
 using namespace std;
+using json = nlohmann::json;
 
 int main(int argc, char const *argv[])
 {
     google::InitGoogleLogging(argv[0]);
+    fLB::FLAGS_logtostderr = true;
+
+    LOG(INFO) << "Running simulation...";
+    
+
     setRobotsAmount(4);
     setMagazineSize(6, 5);
     vector<vector<int>> magazine = {
@@ -31,13 +39,19 @@ int main(int argc, char const *argv[])
         set<int> {2, 4}
     };
     vector<vector<Move>> solution = simulate(magazine, robotPositions, orders);
-    for(std::size_t i = 0; i < solution.size(); i++)
-    {
-        for(std::size_t j = 0; j < solution[i].size(); j++)
-        {
-            cout<<"("<<solution[i][j].position.row<<", "<<solution[i][j].position.col<<", "<<solution[i][j].action<<") ";
-        }
-        cout<<endl;
-    }
+
+    LOG(INFO) << "Converting solution to JSON format";
+    json j = solution;
+    LOG(INFO) << "Writing solution in JSON format to stdout";
+    std::cout << j << std::endl;
+
+    // for(std::size_t i = 0; i < solution.size(); i++)
+    // {
+    //     for(std::size_t j = 0; j < solution[i].size(); j++)
+    //     {
+    //         cout<< "(" << solution[i][j].position.row << ", " <<solution[i][j].position.col << ", " <<solution[i][j].action<< ") ";
+    //     }
+    //     cout << endl;
+    // }
     return 0;
 }

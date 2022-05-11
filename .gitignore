@@ -33,6 +33,7 @@
 
 # IDE specific files
 .idea
+.vscode
 
 # cmake project output files
 build/

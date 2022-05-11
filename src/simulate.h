@@ -3,8 +3,10 @@
 #include <stack>
 #include <iterator>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 using namespace std;
+using json = nlohmann::json;
 
 #define ORDER_ITERATOR for (int i = 0; i < ORDERS_AMOUNT; i++)
 
@@ -17,6 +19,15 @@ enum Action
     GO_W,
     TAKE
 };
+
+NLOHMANN_JSON_SERIALIZE_ENUM( Action, {
+    {WAIT, "WAIT"},
+    {GO_N, "N"},
+    {GO_E, "E"},
+    {GO_S, "S"},
+    {GO_W, "W"},
+    {TAKE, "TAKE"}
+})
 
 struct Position
 {
@@ -34,7 +45,9 @@ struct Move
 {
     Position position;
     Action action;
+
 };
+
 struct DFSLevel 
 {
     Position position;
@@ -42,6 +55,7 @@ struct DFSLevel
     bool empty();
     void remove(Position position);
 };
+
 struct DFSStack
 {
     DFSLevel topLevel;
@@ -81,3 +95,22 @@ vector<Position> getNeighbors(Position currentPosition);
 Action defineMove(Position from, Position to);
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], set<int> orders[]);
 
+
+// method names are imposed by the library authors
+void to_json(json &j, const Move &move);
+void from_json(const json &j, Move &move);
+
+namespace nlohmann {
+    template <typename T>
+    struct adl_serializer<std::vector<std::vector<T>>> {
+        static void to_json(json &j, const std::vector<std::vector<T>> &vec) {
+           for (auto &row : vec) {
+               j.push_back(json(row));
+           }
+        }
+
+        static void from_json(const json &j, std::vector<std::vector<T>> &vec) {
+           // not required for now 
+        }
+    };
+} // namespave nlohmann

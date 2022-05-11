@@ -296,3 +296,18 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     }
     return simulation;
 }
+
+// method names are imposed by the library authors
+void to_json(json &j, const Move &move) {
+    j = json {
+        { "row", move.position.row },
+        { "col", move.position.col },
+        { "action", move.action }
+    };
+}
+
+void from_json(const json &j, Move &move) {
+    move.position.row = j.at("row").get<int>();
+    move.position.col = j.at("col").get<int>();
+    move.action = j.at("action").get<Action>();
+}
