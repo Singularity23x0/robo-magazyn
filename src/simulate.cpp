@@ -1,5 +1,4 @@
 #include "simulate.h"
-#include <glog/logging.h>
 
 using namespace std;
 
@@ -7,6 +6,8 @@ int ORDERS_AMOUNT = 1;
 int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
+
+auto RANDOM_ENGINE = default_random_engine();
 
 void Position::load(Position *origin)
 {
@@ -201,7 +202,6 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    // cout<<id<<": "<<"{"<<move.action<<", "<<move.position.row<<", "<<move.position.col<<"}"<<endl;
     return move;
 }
 
@@ -247,6 +247,7 @@ vector<Position> getNeighbors(Position currentPosition)
     {
         neighbors.push_back(Position {row, col + 1});
     }
+    shuffle(begin(neighbors), end(neighbors), RANDOM_ENGINE);
     return neighbors;
 }
 
