@@ -34,6 +34,7 @@
 # IDE specific files
 .idea
 
-# makefile project output files
+# cmake project output files
 build/
-
+dependencies/
+downloads/
