@@ -14,7 +14,6 @@ int main(int argc, char const *argv[])
 
     LOG(INFO) << "Execution started";
     
-
     setRobotsAmount(4);
     setMagazineSize(6, 5);
     vector<vector<int>> magazine = {
