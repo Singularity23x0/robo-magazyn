@@ -7,17 +7,11 @@ int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
 
-bool Position::equals(Position other)
-{
-    return row == other.row && col == other.col;
-}
-
 void Position::load(Position *origin)
 {
     row = origin->row;
     col = origin->col;
 }
-
 
 bool DFSLevel::empty()
 {
@@ -27,8 +21,8 @@ bool DFSLevel::empty()
 void DFSLevel::remove(Position position)
 {
     vector<Position> newNeighbiors;
-    for(int i = 0; i < neighbors.size(); i++)
-        if(!neighbors[i].equals(position))
+    for (std::size_t i = 0; i < neighbors.size(); i++)
+        if (!(neighbors[i] == position))
         {
             newNeighbiors.push_back(neighbors[i]);
         }
@@ -67,7 +61,7 @@ void DFSStack::visit(Position position)
         // create and set new top level
         DFSLevel newLevel;
         newLevel.position = position;
-        for(int i = 0; i < neighbors.size(); i++)
+        for(std::size_t i = 0; i < neighbors.size(); i++)
             if(!wasVisited(neighbors[i]))
             {
                 newLevel.neighbors.push_back(neighbors[i]);
@@ -108,15 +102,15 @@ Position DFSStack::previousLevelPosition()
 
 Position *DFSStack::getFreeNeighbor(Position *robotsPositions)
 {
-    for(int i = 0; i < topLevel.neighbors.size(); i++)
+    for(std::size_t i = 0; i < topLevel.neighbors.size(); i++)
     {
         Position *position = &topLevel.neighbors[i];
         bool isFree = true;
         for(int j = 0; j < ORDERS_AMOUNT && isFree; j++)
         {
-            isFree = isFree && !robotsPositions[j].equals(*position);
+            isFree = isFree && !(robotsPositions[j] == (*position));
         }
-        if(isFree)
+        if (isFree)
         {
             return position;
         }
@@ -226,7 +220,7 @@ bool isPositionTaken(Position position, Position *robotsPositions)
 {
     ORDER_ITERATOR
     {
-        if(robotsPositions[i].equals(position))
+        if(robotsPositions[i] == position)
             return true;
     }
     return false;

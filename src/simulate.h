@@ -17,12 +17,19 @@ enum Action
     GO_W,
     TAKE
 };
+
 struct Position
 {
     int row, col;
-    bool equals(Position other);
+
+    [[nodiscard]] __always_inline bool operator==(const Position &other)
+    {
+        return row == other.row && col == other.col;
+    }
+
     void load(Position *origin);
 };
+
 struct Move
 {
     Position position;
