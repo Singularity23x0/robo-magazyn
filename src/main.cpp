@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 int main(int argc, char const *argv[])
 {
     setRobotsAmount(4);
@@ -30,9 +29,9 @@ int main(int argc, char const *argv[])
         set<int> {2, 4}
     };
     vector<vector<Move>> solution = simulate(magazine, robotPositions, orders);
-    for(int i = 0; i < solution.size(); i++)
+    for(std::size_t i = 0; i < solution.size(); i++)
     {
-        for(int j = 0; j < solution[i].size(); j++)
+        for(std::size_t j = 0; j < solution[i].size(); j++)
         {
             cout<<"("<<solution[i][j].position.row<<", "<<solution[i][j].position.col<<", "<<solution[i][j].action<<") ";
         }
