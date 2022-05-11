@@ -243,7 +243,7 @@ vector<Position> getNeighbors(Position currentPosition)
     {
         neighbors.push_back(Position {row, col - 1});
     }
-    if(col < MAGAZINE_WIDTH)
+    if(col < MAGAZINE_WIDTH - 1)
     {
         neighbors.push_back(Position {row, col + 1});
     }
