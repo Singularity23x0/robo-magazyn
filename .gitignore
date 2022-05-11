@@ -31,3 +31,8 @@
 *.out
 *.app
 .DS_Store
+
+# cmake project output files
+build/
+dependencies/
+downloads/
