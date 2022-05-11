@@ -1,10 +1,12 @@
 #include <iostream>
+#include <glog/logging.h>
 #include "simulate.h"
 
 using namespace std;
 
 int main(int argc, char const *argv[])
 {
+    google::InitGoogleLogging(argv[0]);
     setRobotsAmount(4);
     setMagazineSize(6, 5);
     vector<vector<int>> magazine = {
