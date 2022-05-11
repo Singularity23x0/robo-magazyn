@@ -1,4 +1,5 @@
 #include "simulate.h"
+#include <glog/logging.h>
 
 using namespace std;
 
@@ -271,7 +272,7 @@ Action defineMove(Position from, Position to)
 
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], set<int> orders[])
 {
-    cout<<"RUNNING"<<endl;
+    LOG(INFO) << "Initializing simulation";
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
     bool simulationComplete = false;
@@ -279,7 +280,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     {
         dfs[i].init(i, magazine, robotPositions, orders[i]);
     }
-    cout<<"SIMULATING"<<endl;
+    LOG(INFO) << "Running simulation";
     while(!simulationComplete)
     {
         // simulating all moves

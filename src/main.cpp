@@ -12,7 +12,7 @@ int main(int argc, char const *argv[])
     google::InitGoogleLogging(argv[0]);
     fLB::FLAGS_logtostderr = true;
 
-    LOG(INFO) << "Running simulation...";
+    LOG(INFO) << "Execution started";
     
 
     setRobotsAmount(4);
