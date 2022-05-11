@@ -30,7 +30,13 @@
 *.exe
 *.out
 *.app
+
+# OS specific
 .DS_Store
+
+# IDE specific files
+.idea
+.vscode
 
 # cmake project output files
 build/
