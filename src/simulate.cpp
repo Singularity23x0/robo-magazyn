@@ -7,8 +7,6 @@ int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
 
-auto RANDOM_ENGINE = default_random_engine();
-
 void Position::load(Position *origin)
 {
     row = origin->row;
@@ -226,7 +224,7 @@ bool isPositionTaken(Position position, Position *robotsPositions)
     }
     return false;
 }
-
+int x=0;
 vector<Position> getNeighbors(Position currentPosition)
 {
     int row = currentPosition.row, col = currentPosition.col;
@@ -247,7 +245,7 @@ vector<Position> getNeighbors(Position currentPosition)
     {
         neighbors.push_back(Position {row, col + 1});
     }
-    shuffle(begin(neighbors), end(neighbors), RANDOM_ENGINE);
+    random_shuffle(begin(neighbors), end(neighbors));
     return neighbors;
 }
 
