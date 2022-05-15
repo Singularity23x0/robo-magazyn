@@ -72,20 +72,20 @@ function draw() {
                 let robot_position = robot_positions[robot_i]
                 if (robot_position["row"] == i && robot_position["col"] == j) {
                     fill(colors[robot_i])
-                    circle(robot_i + (j + .5) * SCALE, robot_i + (i + .5) * SCALE, .8 * SCALE)
+                    circle((j + .5) * SCALE, robot_i + (i + .5) * SCALE, .8 * SCALE)
                 }
             }
 
             // draw products
-            let small_circles_count = 0
-            let diameter = SCALE / ROBOT_COUNT - 2
+            let rects_count = 0
+            let rect_size = SCALE / ROBOT_COUNT - 2
 
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
 
                 if (orders_copy[robot_i].indexOf(board[i][j]) != -1) {
                     fill(colors[robot_i])
-                    circle(ROBOT_COUNT + j * SCALE + (small_circles_count + .5) * (diameter), -ROBOT_COUNT + (i + 1) * SCALE - diameter / 2, diameter)
-                    small_circles_count++
+                    rect(ROBOT_COUNT + j * SCALE + rects_count * rect_size, -ROBOT_COUNT + (i + 1) * SCALE - rect_size, rect_size, rect_size, 5)
+                    rects_count++
                 }
             }
         }
