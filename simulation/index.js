@@ -59,6 +59,12 @@ function draw() {
             stroke(BG_COLOR)
             rect(j * SCALE, i * SCALE, SCALE, SCALE)
 
+            textSize(SCALE*.6)
+            textAlign(CENTER, CENTER)
+            fill(BG_COLOR + "80")
+            noStroke()
+            text(board[i][j], (j + .5) * SCALE, (i + .5) * SCALE)
+
             noStroke()
 
             // draw robots
@@ -95,7 +101,7 @@ function takeProducts(robot_positions) {
         const action = robot_positions[robot_i]["action"]
         const row = robot_positions[robot_i]["row"]
         const col = robot_positions[robot_i]["col"]
-        if (robot_positions[robot_i]["action"] === "TAKE") {
+        if (action === "TAKE") {
             let product_index = orders_copy[robot_i].indexOf(board[row][col])
             if (product_index != -1) {
                 orders_copy[robot_i].splice(product_index, 1)
