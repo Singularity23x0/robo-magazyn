@@ -3,6 +3,7 @@ let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
 let frameLabel, frame = -1
 
 const BOARD_COLOR = "#355070"
+const DARK_BOARD_COLOR = "#3E4756"
 const BG_COLOR = "#6881A4"
 const colors = ["#f87575", "#b9e6ff", "#5c95ff", "#7e6c6c", "eab464"]
 
@@ -54,7 +55,7 @@ function draw() {
 
     for (let i = 0; i < ROW_COUNT; i++) {
         for (let j = 0; j < COL_COUNT; j++) {
-            fill(BOARD_COLOR)
+            fill(board[i][j] != -1 ? BOARD_COLOR : DARK_BOARD_COLOR)
             strokeWeight(3)
             stroke(BG_COLOR)
             rect(j * SCALE, i * SCALE, SCALE, SCALE)
