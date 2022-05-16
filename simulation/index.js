@@ -1,7 +1,7 @@
 let result, board, orders, ordersCopy, solution
 let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
 let frameLabel, frame = -1
-let ordersLabel;
+let ordersLabel, pauseButton;
 
 const BOARD_COLOR = "#355070"
 const DARK_BOARD_COLOR = "#3E4756"
@@ -29,8 +29,21 @@ function setup() {
             SCALE = height / ROW_COUNT - 5
             frameRate(1)
             frameLabel = createP(0)
+
             ordersLabel = createDiv()
             ordersLabel.addClass('orders')
+
+            pauseButton = createButton("pause")
+            pauseButton.mousePressed(() => {
+                if (isLooping()) {
+                    pauseButton.html("resume")
+                    noLoop()
+                } else {
+                    pauseButton.html("pause")
+                    loop()
+                }
+            })
+
             frame = 0
 
             loop()
@@ -72,9 +85,9 @@ function draw() {
             stroke(BG_COLOR)
             rect(j * SCALE, i * SCALE, SCALE, SCALE)
 
-            textSize(SCALE*.5)
+            textSize(SCALE * .5)
             textAlign(CENTER, CENTER)
-            fill(BG_COLOR + "80")
+            fill(BG_COLOR + "50")
             noStroke()
             text(board[i][j], (j + .5) * SCALE, (i + .5) * SCALE)
 
