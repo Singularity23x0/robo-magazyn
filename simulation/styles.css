@@ -14,3 +14,7 @@ p {
     font-size: 50px;
     margin-left: 30px;
 }
+
+.orders p {
+    font-size: 40px;
+}

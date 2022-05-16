@@ -1,6 +1,7 @@
-let result, board, orders, orders_copy, solution
+let result, board, orders, ordersCopy, solution
 let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
 let frameLabel, frame = -1
+let ordersLabel;
 
 const BOARD_COLOR = "#355070"
 const DARK_BOARD_COLOR = "#3E4756"
@@ -14,7 +15,7 @@ function setup() {
         })
         .then(result => {
             orders = result["orders"]
-            orders_copy = JSON.parse(JSON.stringify(orders))
+            ordersCopy = JSON.parse(JSON.stringify(orders))
             board = result["board"]
             solution = result["solution"]
 
@@ -28,11 +29,21 @@ function setup() {
             SCALE = height / ROW_COUNT - 5
             frameRate(1)
             frameLabel = createP(0)
+            ordersLabel = createDiv()
+            ordersLabel.addClass('orders')
             frame = 0
 
             loop()
         }
         );
+}
+
+function ordersToHtml() {
+    let html = ""
+    for (let i = 0; i < ROBOT_COUNT; i++) {
+        html += `<p style="color: ${colors[i]}">[${ordersCopy[i].join(', ')}]<p>`
+    }
+    return html
 }
 
 function draw() {
@@ -49,7 +60,8 @@ function draw() {
         return
     }
 
-    frameLabel.elt.innerHTML = frame
+    frameLabel.html(`step: ${frame}`)
+    ordersLabel.html(ordersToHtml())
 
     const robot_positions = solution[frame];
 
@@ -60,7 +72,7 @@ function draw() {
             stroke(BG_COLOR)
             rect(j * SCALE, i * SCALE, SCALE, SCALE)
 
-            textSize(SCALE*.6)
+            textSize(SCALE*.5)
             textAlign(CENTER, CENTER)
             fill(BG_COLOR + "80")
             noStroke()
@@ -83,7 +95,7 @@ function draw() {
 
             for (let robot_i = 0; robot_i < ROBOT_COUNT; robot_i++) {
 
-                if (orders_copy[robot_i].indexOf(board[i][j]) != -1) {
+                if (ordersCopy[robot_i].indexOf(board[i][j]) != -1) {
                     fill(colors[robot_i])
                     rect(ROBOT_COUNT + j * SCALE + rects_count * rect_size, -ROBOT_COUNT + (i + 1) * SCALE - rect_size, rect_size, rect_size, 5)
                     rects_count++
@@ -103,9 +115,9 @@ function takeProducts(robot_positions) {
         const row = robot_positions[robot_i]["row"]
         const col = robot_positions[robot_i]["col"]
         if (action === "TAKE") {
-            let product_index = orders_copy[robot_i].indexOf(board[row][col])
+            let product_index = ordersCopy[robot_i].indexOf(board[row][col])
             if (product_index != -1) {
-                orders_copy[robot_i].splice(product_index, 1)
+                ordersCopy[robot_i].splice(product_index, 1)
             }
         }
     }
