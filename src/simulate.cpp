@@ -20,14 +20,13 @@ bool DFSLevel::empty()
 
 void DFSLevel::remove(Position position)
 {
-    vector<Position> newNeighbiors;
+    vector<Position> newNeighbors;
     for (std::size_t i = 0; i < neighbors.size(); i++)
         if (!(neighbors[i] == position)) {
-            newNeighbiors.push_back(neighbors[i]);
+            newNeighbors.push_back(neighbors[i]);
         }
-    neighbors = newNeighbiors;
+    neighbors = newNeighbors;
 }
-
 
 void DFSStack::init(Position position)
 {
@@ -112,11 +111,12 @@ Position *DFSStack::getFreeNeighbor(Position *robotsPositions)
 }
 
 
-void Robot::init(int id, vector<vector<int>> &magazine, Position *robotsPositions, set<int> order)
+void Robot::init(int id, vector<vector<int>> &magazine, Position *robotsPositions, Position endPosition, set<int> order)
 {
     this->id = id;
     this->magazine = magazine;
     this->robotsPositions = robotsPositions;
+    this->endPosition = endPosition;
     this->order = order;
     dfsStack.init(getPosition());
 }
@@ -205,6 +205,7 @@ bool isPositionTaken(Position position, Position *robotsPositions)
     }
     return false;
 }
+
 int x = 0;
 vector<Position> getNeighbors(Position currentPosition)
 {
@@ -222,7 +223,7 @@ vector<Position> getNeighbors(Position currentPosition)
     if (col < MAGAZINE_WIDTH - 1) {
         neighbors.push_back(Position{row, col + 1});
     }
-    
+
     random_device rd;
     mt19937 g(rd());
     shuffle(begin(neighbors), end(neighbors), g);
@@ -251,7 +252,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     bool simulationComplete = false;
     ORDER_ITERATOR
     {
-        dfs[i].init(i, magazine, robotPositions, orders[i]);
+        dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
     LOG(INFO) << "Running simulation";
     while (!simulationComplete) {

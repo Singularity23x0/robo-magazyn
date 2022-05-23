@@ -1,12 +1,12 @@
-#include <vector>
+#include <algorithm>
+#include <glog/logging.h>
+#include <iostream>
+#include <iterator>
+#include <nlohmann/json.hpp>
+#include <random>
 #include <set>
 #include <stack>
-#include <iterator>
-#include <iostream>
-#include <nlohmann/json.hpp>
-#include <glog/logging.h>
-#include <random>
-#include <algorithm>
+#include <vector>
 
 using namespace std;
 using json = nlohmann::json;
@@ -23,17 +23,14 @@ enum Action
     TAKE
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM( Action, {
-    {WAIT, "WAIT"},
-    {GO_N, "N"},
-    {GO_E, "E"},
-    {GO_S, "S"},
-    {GO_W, "W"},
-    {TAKE, "TAKE"}
-})
+NLOHMANN_JSON_SERIALIZE_ENUM(Action, {{WAIT, "WAIT"},
+                                      {GO_N, "N"},
+                                      {GO_E, "E"},
+                                      {GO_S, "S"},
+                                      {GO_W, "W"},
+                                      {TAKE, "TAKE"}})
 
-struct Position
-{
+struct Position {
     int row, col;
 
     bool operator==(const Position &other)
@@ -44,23 +41,19 @@ struct Position
     void load(Position *origin);
 };
 
-struct Move
-{
+struct Move {
     Position position;
     Action action;
-
 };
 
-struct DFSLevel 
-{
+struct DFSLevel {
     Position position;
     vector<Position> neighbors;
     bool empty();
     void remove(Position position);
 };
 
-struct DFSStack
-{
+struct DFSStack {
     DFSLevel topLevel;
     vector<DFSLevel> levels;
     vector<vector<int>> visited;
@@ -75,15 +68,15 @@ struct DFSStack
     Position previousLevelPosition();
     Position *getFreeNeighbor(Position *robotsPositions);
 };
-struct Robot
-{
+struct Robot {
     int id;
     vector<vector<int>> magazine;
     Position *robotsPositions;
+    Position endPosition;
     set<int> order;
     bool orderComplete = false;
     DFSStack dfsStack;
-    void init(int id, vector<vector<int>> &magazine, Position *robotsPositions, set<int> order);
+    void init(int id, vector<vector<int>> &magazine, Position *robotsPositions, Position endPosition, set<int> order);
     Position getPosition();
     void setPosition(Position position);
     bool orderTurnedIn();
@@ -103,17 +96,20 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
 void to_json(json &j, const Move &move);
 void from_json(const json &j, Move &move);
 
-namespace nlohmann {
-    template <typename T>
+namespace nlohmann
+{
+    template<typename T>
     struct adl_serializer<std::vector<std::vector<T>>> {
-        static void to_json(json &j, const std::vector<std::vector<T>> &vec) {
-           for (auto &row : vec) {
-               j.push_back(json(row));
-           }
+        static void to_json(json &j, const std::vector<std::vector<T>> &vec)
+        {
+            for (auto &row : vec) {
+                j.push_back(json(row));
+            }
         }
 
-        static void from_json(const json &j, std::vector<std::vector<T>> &vec) {
-           // not required for now 
+        static void from_json(const json &j, std::vector<std::vector<T>> &vec)
+        {
+            // not required for now
         }
     };
-} // namespave nlohmann
+}// namespace nlohmann
