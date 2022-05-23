@@ -4,6 +4,9 @@
 #include <iterator>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <glog/logging.h>
+#include <random>
+#include <algorithm>
 
 using namespace std;
 using json = nlohmann::json;

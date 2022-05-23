@@ -1,5 +1,4 @@
 #include "simulate.h"
-#include <glog/logging.h>
 
 using namespace std;
 
@@ -201,7 +200,6 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    // cout<<id<<": "<<"{"<<move.action<<", "<<move.position.row<<", "<<move.position.col<<"}"<<endl;
     return move;
 }
 
@@ -226,7 +224,7 @@ bool isPositionTaken(Position position, Position *robotsPositions)
     }
     return false;
 }
-
+int x=0;
 vector<Position> getNeighbors(Position currentPosition)
 {
     int row = currentPosition.row, col = currentPosition.col;
@@ -247,6 +245,7 @@ vector<Position> getNeighbors(Position currentPosition)
     {
         neighbors.push_back(Position {row, col + 1});
     }
+    random_shuffle(begin(neighbors), end(neighbors));
     return neighbors;
 }
 
@@ -272,6 +271,7 @@ Action defineMove(Position from, Position to)
 
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], set<int> orders[])
 {
+    srand(time(0));
     LOG(INFO) << "Initializing simulation";
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
