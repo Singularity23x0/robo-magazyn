@@ -131,16 +131,10 @@ void Robot::setPosition(Position position)
     robotsPositions[id] = position;
 }
 
-bool Robot::orderTurnedIn()
-{
-    return orderComplete && order.empty();
-}
-
 void Robot::sendToTurnInIfComplete()
 {
     if (!orderComplete && order.empty()) {
         orderComplete = true;
-        order.insert(ORDER_TURN_IN_STATION);
     }
 }
 
@@ -152,7 +146,11 @@ Move Robot::makeMove()
     move.position = currentPosition;
 
     set<int>::iterator it = order.find(availableProduct);
-    if (it != order.end()) {
+
+    if (orderComplete && currentPosition == endPosition) {
+        reachedEnd = true;
+        move.action = WAIT; // stay in the endPosition
+    } else if (it != order.end()) {
         // TAKE action
         move.action = TAKE;
         order.erase(it);
@@ -163,6 +161,8 @@ Move Robot::makeMove()
         Position target = dfsStack.previousLevelPosition();
         if (isPositionTaken(target, robotsPositions)) {
             move.action = WAIT;
+            if (waited)
+                dfsStack.reset(currentPosition);
         } else {
             nextPosition = target;
             move.action = defineMove(currentPosition, nextPosition);
@@ -172,6 +172,8 @@ Move Robot::makeMove()
         Position *freeNeighbor = dfsStack.getFreeNeighbor(robotsPositions);
         if (freeNeighbor == NULL) {
             move.action = WAIT;
+            if (waited)
+                dfsStack.reset(currentPosition);
         } else {
             nextPosition.load(freeNeighbor);
             move.action = defineMove(currentPosition, nextPosition);
@@ -181,6 +183,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
+    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
@@ -265,7 +268,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         simulationComplete = true;
         ORDER_ITERATOR
         {
-            simulationComplete = simulationComplete && dfs[i].orderTurnedIn();
+            simulationComplete = simulationComplete && dfs[i].reachedEnd;
         }
     }
     return simulation;

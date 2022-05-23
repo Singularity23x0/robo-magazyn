@@ -75,6 +75,7 @@ struct Robot {
     Position endPosition;
     set<int> order;
     bool orderComplete = false;
+    bool reachedEnd = false;
     DFSStack dfsStack;
     void init(int id, vector<vector<int>> &magazine, Position *robotsPositions, Position endPosition, set<int> order);
     Position getPosition();
@@ -82,6 +83,7 @@ struct Robot {
     bool orderTurnedIn();
     void sendToTurnInIfComplete();
     Move makeMove();
+    bool waited = false;
 };
 
 void setRobotsAmount(int to);
