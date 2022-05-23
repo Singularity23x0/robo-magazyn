@@ -36,7 +36,7 @@ struct Position
 {
     int row, col;
 
-    [[nodiscard]] __always_inline bool operator==(const Position &other)
+    bool operator==(const Position &other)
     {
         return row == other.row && col == other.col;
     }
@@ -96,7 +96,7 @@ void setMagazineSize(int height, int width);
 bool isPositionTaken(Position position, Position *robotsPositions);
 vector<Position> getNeighbors(Position currentPosition);
 Action defineMove(Position from, Position to);
-vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], set<int> orders[]);
+vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], Position robotEndPositions[], set<int> orders[]);
 
 
 // method names are imposed by the library authors
