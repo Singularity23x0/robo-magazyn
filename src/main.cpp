@@ -1,5 +1,5 @@
-#include <iostream>
 #include <glog/logging.h>
+#include <iostream>
 #include <nlohmann/json.hpp>
 
 #include "simulate.h"
@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
     fLB::FLAGS_logtostderr = true;
 
     LOG(INFO) << "Execution started";
-    
+
 
     setRobotsAmount(4);
     setMagazineSize(6, 5);
@@ -27,18 +27,25 @@ int main(int argc, char const *argv[])
 
     };
     Position robotPositions[4] = {
-        Position {0, 0},
-        Position {4, 4},
-        Position {2, 4},
-        Position {4, 1}
+        Position{0, 0},
+        Position{4, 4},
+        Position{2, 4},
+        Position{4, 1}
     };
+
+    Position robotEndPositions[4] = {
+        Position{0, 0},
+        Position{5, 0},
+        Position{0, 4},
+        Position{5, 4}
+    };
+    
     set<int> orders[4] = {
-        set<int> {0, 1, 3},
-        set<int> {0, 1, 5},
-        set<int> {1, 3, 4},
-        set<int> {2, 4}
-    };
-    vector<vector<Move>> solution = simulate(magazine, robotPositions, orders);
+        set<int>{0, 1, 3},
+        set<int>{0, 1, 5},
+        set<int>{1, 3, 4},
+        set<int>{2, 4}};
+    vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
 
     LOG(INFO) << "Converting solution to JSON format";
     json j = solution;

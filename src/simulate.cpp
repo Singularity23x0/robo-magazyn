@@ -20,15 +20,13 @@ bool DFSLevel::empty()
 
 void DFSLevel::remove(Position position)
 {
-    vector<Position> newNeighbiors;
+    vector<Position> newNeighbors;
     for (std::size_t i = 0; i < neighbors.size(); i++)
-        if (!(neighbors[i] == position))
-        {
-            newNeighbiors.push_back(neighbors[i]);
+        if (!(neighbors[i] == position)) {
+            newNeighbors.push_back(neighbors[i]);
         }
-    neighbors = newNeighbiors;
+    neighbors = newNeighbors;
 }
-
 
 void DFSStack::init(Position position)
 {
@@ -48,8 +46,7 @@ void DFSStack::reset(Position position)
 
 void DFSStack::visit(Position position)
 {
-    if(visited[position.row][position.col] < marker)
-    {
+    if (visited[position.row][position.col] < marker) {
         // remove current neighbor
         topLevel.remove(position);
         // set position as visited
@@ -61,9 +58,8 @@ void DFSStack::visit(Position position)
         // create and set new top level
         DFSLevel newLevel;
         newLevel.position = position;
-        for(std::size_t i = 0; i < neighbors.size(); i++)
-            if(!wasVisited(neighbors[i]))
-            {
+        for (std::size_t i = 0; i < neighbors.size(); i++)
+            if (!wasVisited(neighbors[i])) {
                 newLevel.neighbors.push_back(neighbors[i]);
             }
         topLevel = newLevel;
@@ -83,35 +79,31 @@ bool DFSStack::initiateLevelReturn()
 
 void DFSStack::safetyReset()
 {
-    if(topLevel.empty() && levels.empty())
-    {
+    if (topLevel.empty() && levels.empty()) {
         reset(topLevel.position);
     }
 }
 
-void DFSStack::returnOneLevel() 
+void DFSStack::returnOneLevel()
 {
     topLevel = levels.back();
     levels.pop_back();
 }
 
-Position DFSStack::previousLevelPosition() 
+Position DFSStack::previousLevelPosition()
 {
     return levels.back().position;
 }
 
 Position *DFSStack::getFreeNeighbor(Position *robotsPositions)
 {
-    for(std::size_t i = 0; i < topLevel.neighbors.size(); i++)
-    {
+    for (std::size_t i = 0; i < topLevel.neighbors.size(); i++) {
         Position *position = &topLevel.neighbors[i];
         bool isFree = true;
-        for(int j = 0; j < ORDERS_AMOUNT && isFree; j++)
-        {
+        for (int j = 0; j < ORDERS_AMOUNT && isFree; j++) {
             isFree = isFree && !(robotsPositions[j] == (*position));
         }
-        if (isFree)
-        {
+        if (isFree) {
             return position;
         }
     }
@@ -119,16 +111,17 @@ Position *DFSStack::getFreeNeighbor(Position *robotsPositions)
 }
 
 
-void Robot::init(int id, vector<vector<int>> &magazine, Position *robotsPositions, set<int> order) 
+void Robot::init(int id, vector<vector<int>> &magazine, Position *robotsPositions, Position endPosition, set<int> order)
 {
     this->id = id;
     this->magazine = magazine;
     this->robotsPositions = robotsPositions;
+    this->endPosition = endPosition;
     this->order = order;
     dfsStack.init(getPosition());
 }
 
-Position Robot::getPosition() 
+Position Robot::getPosition()
 {
     return robotsPositions[id];
 }
@@ -138,60 +131,50 @@ void Robot::setPosition(Position position)
     robotsPositions[id] = position;
 }
 
-bool Robot::orderTurnedIn() 
-{
-    return orderComplete && order.empty();
-}
-
 void Robot::sendToTurnInIfComplete()
 {
-    if(!orderComplete && order.empty())
-    {
+    if (!orderComplete && order.empty()) {
         orderComplete = true;
-        order.insert(ORDER_TURN_IN_STATION);
     }
 }
 
-Move Robot::makeMove() 
+Move Robot::makeMove()
 {
     Move move;
-    Position currentPosition=getPosition(), nextPosition=currentPosition;
+    Position currentPosition = getPosition(), nextPosition = currentPosition;
     int availableProduct = magazine[currentPosition.row][currentPosition.col];
     move.position = currentPosition;
 
     set<int>::iterator it = order.find(availableProduct);
-    if (it != order.end()) 
-    {
+
+    if (orderComplete && currentPosition == endPosition) {
+        reachedEnd = true;
+        move.action = WAIT; // stay in the endPosition
+    } else if (it != order.end()) {
         // TAKE action
         move.action = TAKE;
         order.erase(it);
 
         // resetting dfs
         dfsStack.reset(currentPosition);
-    }
-    else if (dfsStack.initiateLevelReturn()) 
-    {
+    } else if (dfsStack.initiateLevelReturn()) {
         Position target = dfsStack.previousLevelPosition();
-        if(isPositionTaken(target, robotsPositions))
-        {
+        if (isPositionTaken(target, robotsPositions)) {
             move.action = WAIT;
-        }
-        else 
-        {
+            if (waited)
+                dfsStack.reset(currentPosition);
+        } else {
             nextPosition = target;
             move.action = defineMove(currentPosition, nextPosition);
             dfsStack.returnOneLevel();
         }
-    }
-    else 
-    {
+    } else {
         Position *freeNeighbor = dfsStack.getFreeNeighbor(robotsPositions);
-        if(freeNeighbor == NULL)
-        {
+        if (freeNeighbor == NULL) {
             move.action = WAIT;
-        }
-        else 
-        {
+            if (waited)
+                dfsStack.reset(currentPosition);
+        } else {
             nextPosition.load(freeNeighbor);
             move.action = defineMove(currentPosition, nextPosition);
             dfsStack.visit(nextPosition);
@@ -200,16 +183,17 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
+    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
 
-void setRobotsAmount(int to) 
+void setRobotsAmount(int to)
 {
     ORDERS_AMOUNT = to;
 }
 
-void setMagazineSize(int height, int width) 
+void setMagazineSize(int height, int width)
 {
     MAGAZINE_HEIGHT = height;
     MAGAZINE_WIDTH = width;
@@ -219,57 +203,50 @@ bool isPositionTaken(Position position, Position *robotsPositions)
 {
     ORDER_ITERATOR
     {
-        if(robotsPositions[i] == position)
+        if (robotsPositions[i] == position)
             return true;
     }
     return false;
 }
-int x=0;
+
+int x = 0;
 vector<Position> getNeighbors(Position currentPosition)
 {
     int row = currentPosition.row, col = currentPosition.col;
     vector<Position> neighbors;
-    if(row > 0)
-    {
-        neighbors.push_back(Position {row - 1, col});
+    if (row > 0) {
+        neighbors.push_back(Position{row - 1, col});
     }
-    if(row < MAGAZINE_HEIGHT - 1)
-    {
-        neighbors.push_back(Position {row + 1, col});
+    if (row < MAGAZINE_HEIGHT - 1) {
+        neighbors.push_back(Position{row + 1, col});
     }
-    if(col > 0)
-    {
-        neighbors.push_back(Position {row, col - 1});
+    if (col > 0) {
+        neighbors.push_back(Position{row, col - 1});
     }
-    if(col < MAGAZINE_WIDTH - 1)
-    {
-        neighbors.push_back(Position {row, col + 1});
+    if (col < MAGAZINE_WIDTH - 1) {
+        neighbors.push_back(Position{row, col + 1});
     }
-    random_shuffle(begin(neighbors), end(neighbors));
+
+    random_device rd;
+    mt19937 g(rd());
+    shuffle(begin(neighbors), end(neighbors), g);
     return neighbors;
 }
 
 Action defineMove(Position from, Position to)
 {
-    if(from.row < to.row)
-    {
+    if (from.row < to.row) {
         return GO_S;
-    }
-    else if(from.row > to.row)
-    {
+    } else if (from.row > to.row) {
         return GO_N;
-    }
-    else if(from.col < to.col)
-    {
+    } else if (from.col < to.col) {
         return GO_E;
-    }
-    else 
-    {
+    } else {
         return GO_W;
     }
 }
 
-vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], set<int> orders[])
+vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], Position robotEndPositions[], set<int> orders[])
 {
     srand(time(0));
     LOG(INFO) << "Initializing simulation";
@@ -278,11 +255,10 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     bool simulationComplete = false;
     ORDER_ITERATOR
     {
-        dfs[i].init(i, magazine, robotPositions, orders[i]);
+        dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
     LOG(INFO) << "Running simulation";
-    while(!simulationComplete)
-    {
+    while (!simulationComplete) {
         // simulating all moves
         ORDER_ITERATOR
         {
@@ -292,22 +268,23 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         simulationComplete = true;
         ORDER_ITERATOR
         {
-            simulationComplete = simulationComplete && dfs[i].orderTurnedIn();
+            simulationComplete = simulationComplete && dfs[i].reachedEnd;
         }
     }
     return simulation;
 }
 
 // method names are imposed by the library authors
-void to_json(json &j, const Move &move) {
-    j = json {
-        { "row", move.position.row },
-        { "col", move.position.col },
-        { "action", move.action }
-    };
+void to_json(json &j, const Move &move)
+{
+    j = json{
+        {"row", move.position.row},
+        {"col", move.position.col},
+        {"action", move.action}};
 }
 
-void from_json(const json &j, Move &move) {
+void from_json(const json &j, Move &move)
+{
     move.position.row = j.at("row").get<int>();
     move.position.col = j.at("col").get<int>();
     move.action = j.at("action").get<Action>();
