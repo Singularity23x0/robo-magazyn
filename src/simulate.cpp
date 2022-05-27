@@ -149,7 +149,7 @@ Move Robot::makeMove()
 
     if (orderComplete && currentPosition == endPosition) {
         reachedEnd = true;
-        move.action = WAIT; // stay in the endPosition
+        move.action = WAIT;// stay in the endPosition
     } else if (it != order.end()) {
         // TAKE action
         move.action = TAKE;
@@ -183,7 +183,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
+    waited = move.action == WAIT;// to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
@@ -260,6 +260,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     LOG(INFO) << "Running simulation";
     while (!simulationComplete) {
         // simulating all moves
+
         ORDER_ITERATOR
         {
             simulation[i].push_back(dfs[i].makeMove());
@@ -272,6 +273,60 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         }
     }
     return simulation;
+}
+
+vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution, int from, int to)
+{
+    Position robotPositions[4] = {
+        Position{solution[0][from].position.row, solution[0][from].position.col},
+        Position{solution[1][from].position.row, solution[1][from].position.col},
+        Position{solution[2][from].position.row, solution[2][from].position.col},
+        Position{solution[3][from].position.row, solution[3][from].position.col},
+    };
+
+    Position robotEndPositions[4] = {
+        Position{solution[0][to].position.row, solution[0][to].position.col},
+        Position{solution[1][to].position.row, solution[1][to].position.col},
+        Position{solution[2][to].position.row, solution[2][to].position.col},
+        Position{solution[3][to].position.row, solution[3][to].position.col},
+    };
+
+    set<int> orders[4] = {
+        set<int>{},
+        set<int>{},
+        set<int>{},
+        set<int>{}};
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = from; j <= to; j++) {
+            if (solution[i][j].action == TAKE) {
+                orders[i].insert(magazine[solution[i][j].position.row][solution[i][j].position.col]);
+            }
+        }
+    }
+
+    vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
+    vector<vector<Move>> newSolution(4);
+
+    for (int i = 0; i < from; i++) {
+        for (int robot_i = 0; robot_i < 4; robot_i++) {
+            newSolution[robot_i].push_back(solution[robot_i][i]);
+        }
+    }
+
+    for (int i = 0; i < newPart.size(); i++) {
+        for (int robot_i = 0; robot_i < 4; robot_i++) {
+            newSolution[robot_i].push_back(newPart[robot_i][i]);
+        }
+    }
+
+    for (int i = to; i < solution.size(); i++) {
+        for (int robot_i = 0; robot_i < 4; robot_i++) {
+            newSolution[robot_i].push_back(solution[robot_i][i]);
+        }
+    }
+
+    return newSolution;
 }
 
 // method names are imposed by the library authors
