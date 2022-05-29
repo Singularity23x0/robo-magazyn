@@ -27,7 +27,7 @@ function setup() {
 
             createCanvas(.8 * windowHeight * COL_COUNT / ROW_COUNT, .8 * windowHeight)
             SCALE = height / ROW_COUNT - 5
-            frameRate(1)
+            frameRate(10)
             frameLabel = createP(0)
 
             ordersLabel = createDiv()

@@ -39,16 +39,30 @@ int main(int argc, char const *argv[])
         Position{0, 4},
         Position{5, 4}
     };
-    
+
     set<int> orders[4] = {
         set<int>{0, 1, 3},
         set<int>{0, 1, 5},
         set<int>{1, 3, 4},
         set<int>{2, 4}};
+
     vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
+    vector<vector<Move>> mutatedSolution = solution;
+    
+    for (int i = 0; i < 5; i++) {
+        try {
+            mutatedSolution = mutate(magazine, mutatedSolution);
+        } catch(...) {
+            i -= 1;
+        }
+    }
+    // vector<vector<Move>> mutatedSolution = solution;
+
+    cout << "SOLUTION LENGTH: " << mutatedSolution[0].size() << endl;
+
 
     LOG(INFO) << "Converting solution to JSON format";
-    json j = solution;
+    json j = mutatedSolution;
     LOG(INFO) << "Writing solution in JSON format to stdout";
     std::cout << j << std::endl;
 

@@ -86,6 +86,7 @@ vector<Position> getNeighbors(Position currentPosition);
 Action defineMove(Position from, Position to);
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], Position robotEndPositions[], set<int> orders[]);
 
+vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution);
 
 // method names are imposed by the library authors
 void to_json(json &j, const Move &move);
