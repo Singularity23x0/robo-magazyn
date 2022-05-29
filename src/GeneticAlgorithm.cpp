@@ -55,5 +55,5 @@ void GeneticAlgorithm::pickNewPopulation()
     for (int i = 0; i < population.size(); ++i) {
         sizes.push_back(population[i].size());
     }
-    discrete
+
 }
