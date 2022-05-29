@@ -109,3 +109,29 @@ namespace nlohmann
         }
     };
 }// namespace nlohmann
+
+
+// ALGORITHM
+struct Solution {
+    vector<vector<Move>> moves;
+    long size();
+};
+
+class GeneticAlgorithm
+{
+private:
+    vector<vector<int>> magazine;
+    Solution topSolution;
+    vector<Solution> population;
+    int mutationsFromSolution;
+    void init();
+    void findBestSolution();
+    void newGeneration();
+    void mutateSolutions();
+    void pickNewPopulation();
+
+public:
+    GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution);
+    void run(int generationsAmount);
+    Solution *bestSolution();
+};
