@@ -1,9 +1,6 @@
-#include <algorithm>
 #include <glog/logging.h>
-#include <iostream>
 #include <iterator>
 #include <nlohmann/json.hpp>
-#include <random>
 #include <set>
 #include <stack>
 #include <vector>
@@ -33,11 +30,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Action, {{WAIT, "WAIT"},
 struct Position {
     int row, col;
 
-    bool operator==(const Position &other)
-    {
-        return row == other.row && col == other.col;
-    }
-
+    bool operator==(const Position &other);
     void load(Position *origin);
 };
 

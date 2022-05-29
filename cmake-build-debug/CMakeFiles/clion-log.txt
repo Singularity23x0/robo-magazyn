@@ -1,0 +1,26 @@
+"C:\Program Files\JetBrains\CLion 2022.1.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2022.1.1/bin/ninja/win/ninja.exe" -G Ninja -S D:\Informatyka_Studia\SEM6\BO\robo-magazyn -B D:\Informatyka_Studia\SEM6\BO\robo-magazyn\cmake-build-debug
+-- The CXX compiler identification is GNU 11.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/JetBrains/CLion 2022.1.1/bin/mingw/bin/g++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Error at CMakeLists.txt:24 (find_package):
+  By not providing "Findglog.cmake" in CMAKE_MODULE_PATH this project has
+  asked CMake to find a package configuration file provided by "glog", but
+  CMake did not find one.
+
+  Could not find a package configuration file provided by "glog" (requested
+  version 0.6.0) with any of the following names:
+
+    glogConfig.cmake
+    glog-config.cmake
+
+  Add the installation prefix of "glog" to CMAKE_PREFIX_PATH or set
+  "glog_DIR" to a directory containing one of the above files.  If "glog"
+  provides a separate development package or SDK, be sure it has been
+  installed.
+
+
+-- Configuring incomplete, errors occurred!
+See also "D:/Informatyka_Studia/SEM6/BO/robo-magazyn/cmake-build-debug/CMakeFiles/CMakeOutput.log".

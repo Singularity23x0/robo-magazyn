@@ -1,4 +1,7 @@
 #include "simulate.h"
+#include <random>
+#include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -6,6 +9,11 @@ int ORDERS_AMOUNT = 1;
 int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
+
+bool Position::operator==(const Position &other)
+{
+    return row == other.row && col == other.col;
+}
 
 void Position::load(Position *origin)
 {
