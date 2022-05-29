@@ -14,7 +14,6 @@ int main(int argc, char const *argv[])
 
     LOG(INFO) << "Execution started";
 
-
     setRobotsAmount(4);
     setMagazineSize(6, 5);
     vector<vector<int>> magazine = {
@@ -30,15 +29,13 @@ int main(int argc, char const *argv[])
         Position{0, 0},
         Position{4, 4},
         Position{2, 4},
-        Position{4, 1}
-    };
+        Position{4, 1}};
 
     Position robotEndPositions[4] = {
         Position{0, 0},
         Position{5, 0},
         Position{0, 4},
-        Position{5, 4}
-    };
+        Position{5, 4}};
 
     set<int> orders[4] = {
         set<int>{0, 1, 3},
@@ -46,23 +43,43 @@ int main(int argc, char const *argv[])
         set<int>{1, 3, 4},
         set<int>{2, 4}};
 
-    vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
-    vector<vector<Move>> mutatedSolution = solution;
-    
-    for (int i = 0; i < 5; i++) {
+
+    vector<Solution> population;
+
+    for (int i = 0; i < 20; i++) {
         try {
-            mutatedSolution = mutate(magazine, mutatedSolution);
-        } catch(...) {
-            i -= 1;
+            vector <vector <Move>> moves = simulate(magazine, robotPositions, robotEndPositions, orders);
+            population.push_back(Solution{moves});
+        } catch (...) {
+            i--;
         }
     }
+
+    GeneticAlgorithm *algorithm = new GeneticAlgorithm(
+        magazine,
+        population,
+        10);
+
+    algorithm->run(50);
+    Solution *solution = algorithm->bestSolution();
+
+    // vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
     // vector<vector<Move>> mutatedSolution = solution;
 
-    cout << "SOLUTION LENGTH: " << mutatedSolution[0].size() << endl;
+    // for (int i = 0; i < 5; i++) {
+    //     try {
+    //         mutatedSolution = mutate(magazine, mutatedSolution);
+    //     } catch(...) {
+    //         i -= 1;
+    //     }
+    // }
+    // vector<vector<Move>> mutatedSolution = solution;
+
+    cout << "SOLUTION LENGTH: " << solution->size() << endl;
 
 
     LOG(INFO) << "Converting solution to JSON format";
-    json j = mutatedSolution;
+    json j = solution->moves;
     LOG(INFO) << "Writing solution in JSON format to stdout";
     std::cout << j << std::endl;
 
@@ -74,5 +91,7 @@ int main(int argc, char const *argv[])
     //     }
     //     cout << endl;
     // }
+
+    delete algorithm;
     return 0;
 }

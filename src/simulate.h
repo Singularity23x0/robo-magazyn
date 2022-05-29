@@ -1,9 +1,6 @@
-#include <algorithm>
 #include <glog/logging.h>
-#include <iostream>
 #include <iterator>
 #include <nlohmann/json.hpp>
-#include <random>
 #include <set>
 #include <stack>
 #include <vector>
@@ -33,11 +30,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Action, {{WAIT, "WAIT"},
 struct Position {
     int row, col;
 
-    bool operator==(const Position &other)
-    {
-        return row == other.row && col == other.col;
-    }
-
+    bool operator==(const Position &other);
     void load(Position *origin);
 };
 
@@ -116,3 +109,29 @@ namespace nlohmann
         }
     };
 }// namespace nlohmann
+
+
+// ALGORITHM
+struct Solution {
+    vector<vector<Move>> moves;
+    long size();
+};
+
+class GeneticAlgorithm
+{
+private:
+    vector<vector<int>> magazine;
+    Solution topSolution;
+    vector<Solution> population;
+    int mutationsFromSolution;
+    void init();
+    void findBestSolution();
+    void newGeneration();
+    void mutateSolutions();
+    void pickNewPopulation();
+
+public:
+    GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution);
+    void run(int generationsAmount);
+    Solution *bestSolution();
+};

@@ -1,4 +1,7 @@
 #include "simulate.h"
+#include <algorithm>
+#include <iostream>
+#include <random>
 
 using namespace std;
 
@@ -7,6 +10,10 @@ int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
 
+bool Position::operator==(const Position &other)
+{
+    return row == other.row && col == other.col;
+}
 random_device dev;
 mt19937 rng(dev());
 
@@ -186,7 +193,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    waited = move.action == WAIT;// to avoid waiting for a taken position for more than two iterations
+    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
@@ -250,7 +257,7 @@ Action defineMove(Position from, Position to)
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], Position robotEndPositions[], set<int> orders[])
 {
     srand(time(0));
-    LOG(INFO) << "Initializing simulation";
+    // LOG(INFO) << "Initializing simulation";
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
     bool simulationComplete = false;
@@ -258,7 +265,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     {
         dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
-    LOG(INFO) << "Running simulation";
+    // LOG(INFO) << "Running simulation";
     int iteration = 0;
     int MAX_ITERATIONS = 1000;
     while (!simulationComplete) {
@@ -284,7 +291,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
 
 vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution)
 {
-    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size());
+    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size()-1);
 
     int from = distribution(rng);
     int to = distribution(rng);
@@ -292,7 +299,7 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     if (from == to) return solution;
     if (from > to) swap(from, to);
 
-    LOG(INFO) << "Mutation from: " << from << " to: " << to << endl;
+    // LOG(INFO) << "Mutation from: " << from << " to: " << to << endl;
 
     Position *robotPositions = new Position[ORDERS_AMOUNT];
     Position *robotEndPositions = new Position[ORDERS_AMOUNT];
@@ -315,11 +322,14 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
         }
     }
 
+    // cout << "simulating" << endl;
     vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
+    // cout << "simulated" << endl;
     vector<vector<Move>> newSolution(ORDERS_AMOUNT);
 
-    LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
+    // LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
 
+    // TODO: Check correct parts joining - should 'from' and 'to' be included and from which part
     ORDER_ITERATOR
     {
         for (int j = 0; j < from; j++) newSolution[i].push_back(solution[i][j]);
@@ -348,4 +358,108 @@ void from_json(const json &j, Move &move)
     move.position.row = j.at("row").get<int>();
     move.position.col = j.at("col").get<int>();
     move.action = j.at("action").get<Action>();
+}
+
+// ALGORITHM
+
+long Solution::size()
+{
+    return moves[0].size();
+}
+
+GeneticAlgorithm::GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution)
+{
+    this->magazine = magazine;
+    this->population = population;
+    this->mutationsFromSolution = mutationsFromSolution;
+}
+
+void GeneticAlgorithm::run(int generationsAmount)
+{
+    init();
+    for (int i = 0; i < generationsAmount; ++i) {
+        newGeneration();
+    }
+}
+
+void GeneticAlgorithm::init()
+{
+    topSolution = population[0];
+    findBestSolution();
+}
+
+void GeneticAlgorithm::newGeneration()
+{   
+    cout << "mutations" << endl;
+    mutateSolutions();
+
+    cout << "find best solution" << endl;
+    findBestSolution();
+    cout << topSolution.size() << endl;
+
+    cout << "pick new population" << endl;
+    pickNewPopulation();
+}
+
+void GeneticAlgorithm::mutateSolutions()
+{
+    int originalSize = population.size();
+    for (int i = 0; i < originalSize; i++) {
+        for (int j = 0; j < mutationsFromSolution; j++) {
+            try {
+                // cout << "mutating " << i << " " << j << endl;
+                vector<vector<Move>> mutated = mutate(magazine, population[i].moves);
+                // cout << "mutated\n" << endl;
+
+                population.push_back(Solution{mutated});
+            } catch (...) {
+                j -= 1;
+            }
+        }
+    }
+}
+
+void GeneticAlgorithm::findBestSolution()
+{
+    for (int i = 0; i < population.size(); ++i) {
+        if (population[i].size() < topSolution.size())
+            topSolution = population[i];
+    }
+}
+
+void GeneticAlgorithm::pickNewPopulation()
+{
+    int targetSize = population.size() / (mutationsFromSolution + 1);
+    vector<Solution> newPopulation;
+    vector<long> sizes;
+    long maxSize = 0;
+    long minSize = population[0].size();
+    vector<int> weights;
+    vector<bool> used(population.size(), false);
+
+    for (int i = 0; i < population.size(); ++i) {
+        sizes.push_back(population[i].size());
+        maxSize = max(maxSize, population[i].size());
+        minSize = min(minSize, population[i].size());
+    }
+    maxSize++;
+    for (int i = 0; i < sizes.size(); ++i) {
+        weights.push_back(maxSize - sizes[i]);
+    }
+
+    discrete_distribution<long> dist{weights.begin(), weights.end()};
+    while (newPopulation.size() < targetSize) {
+        int i = dist(rng);
+        if (!used[i]) {
+            cout << ">>>>> " << i << " " << weights[i] << " " << maxSize - minSize << endl;
+            used[i] = true;
+            newPopulation.push_back(population[i]);
+        }
+    }
+    population = newPopulation;
+}
+
+Solution *GeneticAlgorithm::bestSolution()
+{
+    return &topSolution;
 }
