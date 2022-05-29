@@ -7,6 +7,9 @@ int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
 
+random_device dev;
+mt19937 rng(dev());
+
 void Position::load(Position *origin)
 {
     row = origin->row;
@@ -149,7 +152,7 @@ Move Robot::makeMove()
 
     if (orderComplete && currentPosition == endPosition) {
         reachedEnd = true;
-        move.action = WAIT; // stay in the endPosition
+        move.action = WAIT;// stay in the endPosition
     } else if (it != order.end()) {
         // TAKE action
         move.action = TAKE;
@@ -183,7 +186,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
+    waited = move.action == WAIT;// to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
@@ -209,7 +212,6 @@ bool isPositionTaken(Position position, Position *robotsPositions)
     return false;
 }
 
-int x = 0;
 vector<Position> getNeighbors(Position currentPosition)
 {
     int row = currentPosition.row, col = currentPosition.col;
@@ -227,9 +229,8 @@ vector<Position> getNeighbors(Position currentPosition)
         neighbors.push_back(Position{row, col + 1});
     }
 
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(begin(neighbors), end(neighbors), g);
+    shuffle(begin(neighbors), end(neighbors), rng);
+    return neighbors;
     return neighbors;
 }
 
@@ -258,8 +259,11 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
     LOG(INFO) << "Running simulation";
+    int iteration = 0;
+    int MAX_ITERATIONS = 1000;
     while (!simulationComplete) {
         // simulating all moves
+
         ORDER_ITERATOR
         {
             simulation[i].push_back(dfs[i].makeMove());
@@ -270,8 +274,64 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         {
             simulationComplete = simulationComplete && dfs[i].reachedEnd;
         }
+
+        iteration++;
+        if (iteration >= MAX_ITERATIONS) throw "MAX ITERATIONS EXCEEDED";
     }
     return simulation;
+}
+
+
+vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution)
+{
+    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size());
+
+    int from = distribution(rng);
+    int to = distribution(rng);
+
+    if (from == to) return solution;
+    if (from > to) swap(from, to);
+
+    LOG(INFO) << "Mutation from: " << from << " to: " << to << endl;
+
+    Position *robotPositions = new Position[ORDERS_AMOUNT];
+    Position *robotEndPositions = new Position[ORDERS_AMOUNT];
+
+    set<int> *orders = new set<int>[ORDERS_AMOUNT];
+
+    ORDER_ITERATOR
+    {
+        Position pos = solution[i][from].position;
+        robotPositions[i] = Position{pos.row, pos.col};
+
+        pos = solution[i][to].position;
+        robotEndPositions[i] = Position{pos.row, pos.col};
+
+        for (int j = from; j <= to; j++) {
+            if (solution[i][j].action == TAKE) {
+                Position pos = solution[i][j].position;
+                orders[i].insert(magazine[pos.row][pos.col]);
+            }
+        }
+    }
+
+    vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
+    vector<vector<Move>> newSolution(ORDERS_AMOUNT);
+
+    LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
+
+    ORDER_ITERATOR
+    {
+        for (int j = 0; j < from; j++) newSolution[i].push_back(solution[i][j]);
+        for (int j = 0; j < newPart[0].size(); j++) newSolution[i].push_back(newPart[i][j]);
+        for (int j = to; j < solution[0].size(); j++) newSolution[i].push_back(solution[i][j]);
+    }
+
+    delete[] robotPositions;
+    delete[] robotEndPositions;
+    delete[] orders;
+
+    return newSolution;
 }
 
 // method names are imposed by the library authors
