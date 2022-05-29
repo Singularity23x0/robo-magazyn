@@ -47,7 +47,15 @@ int main(int argc, char const *argv[])
         set<int>{2, 4}};
 
     vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
-    vector<vector<Move>> mutatedSolution = mutate(magazine, solution);
+    vector<vector<Move>> mutatedSolution = solution;
+    
+    for (int i = 0; i < 5; i++) {
+        try {
+            mutatedSolution = mutate(magazine, mutatedSolution);
+        } catch(...) {
+            i -= 1;
+        }
+    }
     // vector<vector<Move>> mutatedSolution = solution;
 
     cout << "SOLUTION LENGTH: " << mutatedSolution[0].size() << endl;

@@ -7,6 +7,9 @@ int MAGAZINE_HEIGHT = 10;
 int MAGAZINE_WIDTH = 10;
 int ORDER_TURN_IN_STATION = -1;
 
+random_device dev;
+mt19937 rng(dev());
+
 void Position::load(Position *origin)
 {
     row = origin->row;
@@ -209,7 +212,6 @@ bool isPositionTaken(Position position, Position *robotsPositions)
     return false;
 }
 
-int x = 0;
 vector<Position> getNeighbors(Position currentPosition)
 {
     int row = currentPosition.row, col = currentPosition.col;
@@ -227,9 +229,8 @@ vector<Position> getNeighbors(Position currentPosition)
         neighbors.push_back(Position{row, col + 1});
     }
 
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(begin(neighbors), end(neighbors), g);
+    shuffle(begin(neighbors), end(neighbors), rng);
+    return neighbors;
     return neighbors;
 }
 
@@ -280,12 +281,10 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     return simulation;
 }
 
+
 vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution)
 {
-    random_device dev;
-    mt19937 rng(dev());
-    uniform_int_distribution<std::mt19937::result_type> distribution(0, solution[0].size());
-
+    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size());
 
     int from = distribution(rng);
     int to = distribution(rng);
@@ -293,77 +292,44 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     if (from == to) return solution;
     if (from > to) swap(from, to);
 
-    cout << "solution length: " << solution[0].size() << endl;
-    cout << "from " << from << " to " << to << endl;
+    LOG(INFO) << "Mutation from: " << from << " to: " << to << endl;
 
-    Position robotPositions[4] = {
-        Position{solution[0][from].position.row, solution[0][from].position.col},
-        Position{solution[1][from].position.row, solution[1][from].position.col},
-        Position{solution[2][from].position.row, solution[2][from].position.col},
-        Position{solution[3][from].position.row, solution[3][from].position.col},
-    };
+    Position *robotPositions = new Position[ORDERS_AMOUNT];
+    Position *robotEndPositions = new Position[ORDERS_AMOUNT];
 
-    cout << "ROBOT POSITIONS " << endl;
+    set<int> *orders = new set<int>[ORDERS_AMOUNT];
+
     ORDER_ITERATOR
     {
-        cout << robotPositions[i].row << " " << robotPositions[i].col << endl;
-    }
+        Position pos = solution[i][from].position;
+        robotPositions[i] = Position{pos.row, pos.col};
 
-    Position robotEndPositions[4] = {
-        Position{solution[0][to].position.row, solution[0][to].position.col},
-        Position{solution[1][to].position.row, solution[1][to].position.col},
-        Position{solution[2][to].position.row, solution[2][to].position.col},
-        Position{solution[3][to].position.row, solution[3][to].position.col},
-    };
+        pos = solution[i][to].position;
+        robotEndPositions[i] = Position{pos.row, pos.col};
 
-    cout << "ROBOT END POSITIONS " << endl;
-    ORDER_ITERATOR
-    {
-        cout << robotEndPositions[i].row << " " << robotEndPositions[i].col << endl;
-    }
-
-    set<int> orders[4] = {
-        set<int>{},
-        set<int>{},
-        set<int>{},
-        set<int>{}};
-
-    cout << orders << endl;
-
-    for (int i = 0; i < 4; i++) {
         for (int j = from; j <= to; j++) {
             if (solution[i][j].action == TAKE) {
-                orders[i].insert(magazine[solution[i][j].position.row][solution[i][j].position.col]);
-                cout << "product: " << magazine[solution[i][j].position.row][solution[i][j].position.col] << endl;
+                Position pos = solution[i][j].position;
+                orders[i].insert(magazine[pos.row][pos.col]);
             }
         }
-    }
-
-    cout << "ORDERS " << endl;
-    ORDER_ITERATOR
-    {
-        for (int product : orders[i]) {
-            cout << product << " ";
-        }
-        cout << endl;
     }
 
     vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
     vector<vector<Move>> newSolution(ORDERS_AMOUNT);
 
-    cout << "new part len: " << newPart[0].size() << " to - from: " << to-from << endl;
+    LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
 
     ORDER_ITERATOR
     {
-        for (int j = 0; j < from; j++)
-            newSolution[i].push_back(solution[i][j]);
-
-        for (int j = 0; j < newPart[0].size(); j++)
-            newSolution[i].push_back(newPart[i][j]);
-
-        for (int j = to; j < solution[0].size(); j++)
-            newSolution[i].push_back(solution[i][j]);
+        for (int j = 0; j < from; j++) newSolution[i].push_back(solution[i][j]);
+        for (int j = 0; j < newPart[0].size(); j++) newSolution[i].push_back(newPart[i][j]);
+        for (int j = to; j < solution[0].size(); j++) newSolution[i].push_back(solution[i][j]);
     }
+
+    delete[] robotPositions;
+    delete[] robotEndPositions;
+    delete[] orders;
 
     return newSolution;
 }
