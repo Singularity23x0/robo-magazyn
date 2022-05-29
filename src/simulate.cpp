@@ -258,6 +258,8 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
     LOG(INFO) << "Running simulation";
+    int iteration = 0;
+    int MAX_ITERATIONS = 1000;
     while (!simulationComplete) {
         // simulating all moves
 
@@ -271,18 +273,41 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         {
             simulationComplete = simulationComplete && dfs[i].reachedEnd;
         }
+
+        iteration++;
+        if (iteration >= MAX_ITERATIONS) throw "MAX ITERATIONS EXCEEDED";
     }
     return simulation;
 }
 
-vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution, int from, int to)
+vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution)
 {
+    random_device dev;
+    mt19937 rng(dev());
+    uniform_int_distribution<std::mt19937::result_type> distribution(0, solution[0].size());
+
+
+    int from = distribution(rng);
+    int to = distribution(rng);
+
+    if (from == to) return solution;
+    if (from > to) swap(from, to);
+
+    cout << "solution length: " << solution[0].size() << endl;
+    cout << "from " << from << " to " << to << endl;
+
     Position robotPositions[4] = {
         Position{solution[0][from].position.row, solution[0][from].position.col},
         Position{solution[1][from].position.row, solution[1][from].position.col},
         Position{solution[2][from].position.row, solution[2][from].position.col},
         Position{solution[3][from].position.row, solution[3][from].position.col},
     };
+
+    cout << "ROBOT POSITIONS " << endl;
+    ORDER_ITERATOR
+    {
+        cout << robotPositions[i].row << " " << robotPositions[i].col << endl;
+    }
 
     Position robotEndPositions[4] = {
         Position{solution[0][to].position.row, solution[0][to].position.col},
@@ -291,39 +316,53 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
         Position{solution[3][to].position.row, solution[3][to].position.col},
     };
 
+    cout << "ROBOT END POSITIONS " << endl;
+    ORDER_ITERATOR
+    {
+        cout << robotEndPositions[i].row << " " << robotEndPositions[i].col << endl;
+    }
+
     set<int> orders[4] = {
         set<int>{},
         set<int>{},
         set<int>{},
         set<int>{}};
 
+    cout << orders << endl;
+
     for (int i = 0; i < 4; i++) {
         for (int j = from; j <= to; j++) {
             if (solution[i][j].action == TAKE) {
                 orders[i].insert(magazine[solution[i][j].position.row][solution[i][j].position.col]);
+                cout << "product: " << magazine[solution[i][j].position.row][solution[i][j].position.col] << endl;
             }
         }
     }
 
+    cout << "ORDERS " << endl;
+    ORDER_ITERATOR
+    {
+        for (int product : orders[i]) {
+            cout << product << " ";
+        }
+        cout << endl;
+    }
+
     vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
-    vector<vector<Move>> newSolution(4);
+    vector<vector<Move>> newSolution(ORDERS_AMOUNT);
 
-    for (int i = 0; i < from; i++) {
-        for (int robot_i = 0; robot_i < 4; robot_i++) {
-            newSolution[robot_i].push_back(solution[robot_i][i]);
-        }
-    }
+    cout << "new part len: " << newPart[0].size() << " to - from: " << to-from << endl;
 
-    for (int i = 0; i < newPart.size(); i++) {
-        for (int robot_i = 0; robot_i < 4; robot_i++) {
-            newSolution[robot_i].push_back(newPart[robot_i][i]);
-        }
-    }
+    ORDER_ITERATOR
+    {
+        for (int j = 0; j < from; j++)
+            newSolution[i].push_back(solution[i][j]);
 
-    for (int i = to; i < solution.size(); i++) {
-        for (int robot_i = 0; robot_i < 4; robot_i++) {
-            newSolution[robot_i].push_back(solution[robot_i][i]);
-        }
+        for (int j = 0; j < newPart[0].size(); j++)
+            newSolution[i].push_back(newPart[i][j]);
+
+        for (int j = to; j < solution[0].size(); j++)
+            newSolution[i].push_back(solution[i][j]);
     }
 
     return newSolution;
