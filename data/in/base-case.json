@@ -1,0 +1,23 @@
+{
+	"magazineWidth": 5,
+	"magazineHeight": 6,
+	"robotCount": 4,
+	"robotPositions": [
+		{"row": 0, "col": 0},
+		{"row": 4, "col": 4},
+		{"row": 2, "col": 4},
+		{"row": 4, "col": 1}
+	],
+	"robotEndPositions": [
+		{"row": 0, "col": 0},
+		{"row": 5, "col": 0},
+		{"row": 0, "col": 4},
+		{"row": 5, "col": 4}
+	],
+	"orders": [
+		[0, 1, 3],
+		[0, 1, 5],
+		[1, 3, 4],
+		[2, 4]
+	]
+}
