@@ -23,12 +23,7 @@ int main(int argc, char const *argv[])
     const string dataInputPath = "data/in";
     const string dataOutputPath = "data/out";
 
-    string configName;
-    if (argc > 1) {
-        configName = string(argv[1]);
-    } else {
-        configName = "base-case.json";
-    }
+    string configName = argc > 1 ? string(argv[1]) : "base-case.json";
 
     string result = readInput(dataInputPath + '/' + configName);
 
