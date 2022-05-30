@@ -217,7 +217,7 @@ void setMagazineSize(int height, int width)
 
 bool isPositionTaken(Position position, Position *robotsPositions)
 {
-    ORDER_ITERATOR
+    ORDER_ITERATOR(i)
     {
         if (robotsPositions[i] == position)
             return true;
@@ -266,7 +266,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
     bool simulationComplete = false;
-    ORDER_ITERATOR
+    ORDER_ITERATOR(i)
     {
         dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
@@ -276,13 +276,13 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     while (!simulationComplete) {
         // simulating all moves
 
-        ORDER_ITERATOR
+        ORDER_ITERATOR(i)
         {
             simulation[i].push_back(dfs[i].makeMove());
         }
         // checking if all simulations are complete
         simulationComplete = true;
-        ORDER_ITERATOR
+        ORDER_ITERATOR(i)
         {
             simulationComplete = simulationComplete && dfs[i].reachedEnd;
         }
@@ -308,7 +308,7 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
 		std::vector<Position> robotEndPositions(ORDERS_AMOUNT);
 		std::vector<set<int>> orders(ORDERS_AMOUNT);
 
-    ORDER_ITERATOR
+    ORDER_ITERATOR(i)
     {
         Position pos = solution[i][from].position;
         robotPositions[i] = Position{pos.row, pos.col};
@@ -329,14 +329,12 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     vector<vector<Move>> newSolution(ORDERS_AMOUNT);
 
     // TODO: Check correct parts joining - should 'from' and 'to' be included and from which part
-    ORDER_ITERATOR
+    ORDER_ITERATOR(i)
     {
         for (int j = 0; j < from; j++) newSolution[i].push_back(solution[i][j]);
         for (std::size_t j = 0; j < newPart[0].size(); j++) newSolution[i].push_back(newPart[i][j]);
         for (std::size_t j = to; j < solution[0].size(); j++) newSolution[i].push_back(solution[i][j]);
     }
-
-    delete[] orders;
 
     return newSolution;
 }
