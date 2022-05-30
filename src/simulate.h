@@ -94,6 +94,9 @@ struct Configuration {
 	vector<Position> robotEndPositions;
 	vector<set<int>> orders;
 	int iterations;
+	int robotCount;
+	int magazineWidth;
+	int magazineHeight;
 };
 
 // method names are imposed by the library authors
@@ -101,6 +104,8 @@ void to_json(json &j, const Move &move);
 void from_json(const json &j, Move &move);
 void to_json(json &j, const Position &position);
 void from_json(const json &j, Position &position);
+void to_json(json &j, const Configuration &config);
+void from_json(const json &j, Configuration &config);
 
 namespace nlohmann
 {
@@ -117,10 +122,8 @@ namespace nlohmann
         {
             // not required for now
 						using nlohmann::from_json;
+						from_json(j, vec);
 
-						for (auto &row: vec) {
-							vec.push_back(from_json(j, row))
-						}
         }
     };
 }// namespace nlohmann

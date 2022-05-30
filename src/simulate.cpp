@@ -374,6 +374,32 @@ void from_json(const json &j, Position &position)
 	position.col = j.at("col").get<int>();
 }
 
+void to_json(json &j, const Configuration &config)
+{
+    j = json {
+        {"magazine", config.magazine},
+        {"robotPositions", config.robotPositions},
+        {"robotEndPositions", config.robotEndPositions},
+        {"orders", config.orders},
+        {"iterations", config.iterations},
+        {"robotCount", config.robotCount},
+        {"magazineWidth", config.magazineWidth},
+        {"magazineHeight", config.magazineHeight}
+    };
+}
+
+void from_json(const json &j, Configuration &config)
+{
+    config.magazine = j.at("magazine").get<vector<vector<int>>>();
+    config.robotPositions = j.at("robotPositions").get<vector<Position>>();
+    config.robotEndPositions = j.at("robotEndPositions").get<vector<Position>>();
+    config.orders = j.at("orders").get<vector<set<int>>>();
+    config.iterations = j.at("iterations").get<int>();
+    config.robotCount = j.at("robotCount").get<int>();
+    config.magazineWidth = j.at("magazineWidth").get<int>();
+    config.magazineHeight = j.at("magazineHeight").get<int>();
+}
+
 // ALGORITHM
 
 long Solution::size()
