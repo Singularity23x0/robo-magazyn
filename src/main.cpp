@@ -11,7 +11,7 @@ using namespace std;
 using json = nlohmann::json;
 
 string readInput(const string &path);
-void saveOutput(const string &path, const vector<vector<Move>> &moves, Configuration &config);
+void saveOutput(const string &path, const vector<vector<Move>> &moves, const Configuration &config, const GeneticAlgorithm &alg);
 
 int main(int argc, char const *argv[])
 {
@@ -104,7 +104,7 @@ int main(int argc, char const *argv[])
     LOG(INFO) << "Converting solution to JSON format";
     json j = solution->moves;
 
-    saveOutput(dataOutputPath + '/' + configName, solution->moves, config);
+    saveOutput(dataOutputPath + '/' + configName, solution->moves, config, *algorithm);
 
     // LOG(INFO) << "Writing solution in JSON format to stdout";
     // std::cout << std::setw(4) << j << std::endl;
@@ -144,7 +144,7 @@ string readInput(const string &path)
     return content;
 }
 
-void saveOutput(const string &path, const vector<vector<Move>> &moves, Configuration &config)
+void saveOutput(const string &path, const vector<vector<Move>> &moves, const Configuration &config, const GeneticAlgorithm &alg)
 {
     LOG(INFO) << "Saving solutions to " + path;
 
@@ -152,6 +152,7 @@ void saveOutput(const string &path, const vector<vector<Move>> &moves, Configura
     j["solution"] = moves;
     j["board"] = config.magazine;
     j["orders"] = config.orders;
+		j["best-in-generation"] = alg.generationBestScores;
 
     ofstream filestream(path, ios::out);
 
