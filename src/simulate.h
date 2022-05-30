@@ -88,9 +88,24 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
 
 vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution);
 
+struct Configuration {
+	vector<vector<int>> magazine;
+	vector<Position> robotPositions;
+	vector<Position> robotEndPositions;
+	vector<set<int>> orders;
+	int iterations;
+	int robotCount;
+	int magazineWidth;
+	int magazineHeight;
+};
+
 // method names are imposed by the library authors
 void to_json(json &j, const Move &move);
 void from_json(const json &j, Move &move);
+void to_json(json &j, const Position &position);
+void from_json(const json &j, Position &position);
+void to_json(json &j, const Configuration &config);
+void from_json(const json &j, Configuration &config);
 
 namespace nlohmann
 {
@@ -106,6 +121,9 @@ namespace nlohmann
         static void from_json(const json &j, std::vector<std::vector<T>> &vec)
         {
             // not required for now
+						using nlohmann::from_json;
+						from_json(j, vec);
+
         }
     };
 }// namespace nlohmann

@@ -1,0 +1,32 @@
+{
+	"magazineWidth": 5,
+	"magazineHeight": 6,
+	"iterations": 100,
+	"robotCount": 4,
+	"robotPositions": [
+		{"row": 0, "col": 0},
+		{"row": 4, "col": 4},
+		{"row": 2, "col": 4},
+		{"row": 4, "col": 1}
+	],
+	"robotEndPositions": [
+		{"row": 0, "col": 0},
+		{"row": 5, "col": 0},
+		{"row": 0, "col": 4},
+		{"row": 5, "col": 4}
+	],
+	"orders": [
+		[0, 1, 3],
+		[0, 1, 5],
+		[1, 3, 4],
+		[2, 4]
+	],
+	"magazine": [
+		[-1, 1, 0, 1, -1],
+		[2, 2, 0, 2, 2],
+		[3, 3, 0, 3, 3],
+		[4, 4, 0, 4, 4],
+		[5, 5, 0, 5, 5],
+		[-1, 2, 3, 4, -1]
+	]
+}

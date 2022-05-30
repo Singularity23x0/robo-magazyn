@@ -349,7 +349,8 @@ void to_json(json &j, const Move &move)
     j = json{
         {"row", move.position.row},
         {"col", move.position.col},
-        {"action", move.action}};
+        {"action", move.action}
+    };
 }
 
 void from_json(const json &j, Move &move)
@@ -357,6 +358,46 @@ void from_json(const json &j, Move &move)
     move.position.row = j.at("row").get<int>();
     move.position.col = j.at("col").get<int>();
     move.action = j.at("action").get<Action>();
+}
+
+void to_json(json &j, const Position &position)
+{
+	j = json {
+		{"row", position.row},
+		{"col", position.col}
+	};
+}
+
+void from_json(const json &j, Position &position)
+{
+	position.row = j.at("row").get<int>();
+	position.col = j.at("col").get<int>();
+}
+
+void to_json(json &j, const Configuration &config)
+{
+    j = json {
+        {"magazine", config.magazine},
+        {"robotPositions", config.robotPositions},
+        {"robotEndPositions", config.robotEndPositions},
+        {"orders", config.orders},
+        {"iterations", config.iterations},
+        {"robotCount", config.robotCount},
+        {"magazineWidth", config.magazineWidth},
+        {"magazineHeight", config.magazineHeight}
+    };
+}
+
+void from_json(const json &j, Configuration &config)
+{
+    config.magazine = j.at("magazine").get<vector<vector<int>>>();
+    config.robotPositions = j.at("robotPositions").get<vector<Position>>();
+    config.robotEndPositions = j.at("robotEndPositions").get<vector<Position>>();
+    config.orders = j.at("orders").get<vector<set<int>>>();
+    config.iterations = j.at("iterations").get<int>();
+    config.robotCount = j.at("robotCount").get<int>();
+    config.magazineWidth = j.at("magazineWidth").get<int>();
+    config.magazineHeight = j.at("magazineHeight").get<int>();
 }
 
 // ALGORITHM
