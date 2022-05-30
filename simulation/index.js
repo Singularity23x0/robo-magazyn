@@ -165,10 +165,7 @@ function returnProducts(robot_positions) {
         const row = robot_positions[robot_i]["row"]
         const col = robot_positions[robot_i]["col"]
         if (action === "TAKE") {
-            let product_index = ordersCopy[robot_i].indexOf(board[row][col])
-            if (product_index != -1) {
-                ordersCopy[robot_i].push(board[row][col])
-            }
+            ordersCopy[robot_i].push(board[row][col])
         }
 	}
 }
