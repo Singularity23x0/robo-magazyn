@@ -322,9 +322,8 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
         }
     }
 
-    // cout << "simulating" << endl;
+
     vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
-    // cout << "simulated" << endl;
     vector<vector<Move>> newSolution(ORDERS_AMOUNT);
 
     // LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
@@ -390,14 +389,9 @@ void GeneticAlgorithm::init()
 
 void GeneticAlgorithm::newGeneration()
 {   
-    cout << "mutations" << endl;
     mutateSolutions();
-
-    cout << "find best solution" << endl;
     findBestSolution();
-    cout << topSolution.size() << endl;
-
-    cout << "pick new population" << endl;
+    cout << "Current best: " << topSolution.size() << endl;
     pickNewPopulation();
 }
 
@@ -407,9 +401,7 @@ void GeneticAlgorithm::mutateSolutions()
     for (int i = 0; i < originalSize; i++) {
         for (int j = 0; j < mutationsFromSolution; j++) {
             try {
-                // cout << "mutating " << i << " " << j << endl;
                 vector<vector<Move>> mutated = mutate(magazine, population[i].moves);
-                // cout << "mutated\n" << endl;
 
                 population.push_back(Solution{mutated});
             } catch (...) {
@@ -451,7 +443,6 @@ void GeneticAlgorithm::pickNewPopulation()
     while (newPopulation.size() < targetSize) {
         int i = dist(rng);
         if (!used[i]) {
-            cout << ">>>>> " << i << " " << weights[i] << " " << maxSize - minSize << endl;
             used[i] = true;
             newPopulation.push_back(population[i]);
         }
