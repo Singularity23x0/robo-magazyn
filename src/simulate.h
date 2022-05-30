@@ -8,7 +8,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-#define ORDER_ITERATOR for (int i = 0; i < ORDERS_AMOUNT; i++)
+#define ORDER_ITERATOR(x) for (int x = 0; x < ORDERS_AMOUNT; ++x)
 
 enum Action
 {
@@ -31,6 +31,7 @@ struct Position {
     int row, col;
 
     bool operator==(const Position &other);
+		bool operator!=(const Position &other);
     void load(Position *origin);
 };
 
@@ -54,7 +55,7 @@ struct DFSStack {
     void init(Position position);
     void reset(Position position);
     void visit(Position position);
-    bool wasVisited(Position field);
+    inline bool wasVisited(Position field);
     bool initiateLevelReturn();
     void safetyReset();
     void returnOneLevel();
@@ -93,7 +94,7 @@ struct Configuration {
 	vector<Position> robotPositions;
 	vector<Position> robotEndPositions;
 	vector<set<int>> orders;
-	int iterations;
+	int initialPopulationSize;
 	int robotCount;
 	int magazineWidth;
 	int magazineHeight;
@@ -134,7 +135,7 @@ namespace nlohmann
 // ALGORITHM
 struct Solution {
     vector<vector<Move>> moves;
-    long size();
+    long size() const;
 };
 
 class GeneticAlgorithm
@@ -146,13 +147,13 @@ private:
     int mutationsFromSolution;
     void init();
     void findBestSolution();
-    void newGeneration();
+    void newGeneration(int generationNumber);
     void mutateSolutions();
     void pickNewPopulation();
 
 public:
     GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution);
     void run(int generationsAmount);
-    Solution *bestSolution();
+    Solution bestSolution();
     vector <int> generationBestScores;
 };

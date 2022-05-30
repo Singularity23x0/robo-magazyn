@@ -2,16 +2,19 @@
 #include <fstream>
 #include <glog/logging.h>
 #include <iostream>
+#include <filesystem>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <cstdlib>
 
 #include "simulate.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 using json = nlohmann::json;
 
-string readInput(const string &path);
-void saveOutput(const string &path, const vector<vector<Move>> &moves, const Configuration &config, const GeneticAlgorithm &alg);
+string readInput(const fs::path &path);
+void saveOutput(const fs::path &path, const vector<vector<Move>> &moves, const Configuration &config, const GeneticAlgorithm &alg);
 
 int main(int argc, char const *argv[])
 {
@@ -20,36 +23,39 @@ int main(int argc, char const *argv[])
 
     LOG(INFO) << "Execution started";
 
-    const string dataInputPath = "data/in";
-    const string dataOutputPath = "data/out";
+		const fs::path inputDirPath = "data/in";
+		const fs::path outputDirPath = "data/out";
 
-    string configName;
-    if (argc > 1) {
-        configName = string(argv[1]);
-    } else {
-        configName = "base-case.json";
-    }
+		if (!fs::is_directory(inputDirPath)) {
+			LOG(FATAL) << "Data directory under " << inputDirPath << " does not exist";
+			std::exit(EXIT_FAILURE);
+		}
 
-    string result = readInput(dataInputPath + '/' + configName);
+		if (!fs::is_directory(outputDirPath)) {
+			LOG(WARNING) << "Output directory under " << outputDirPath << " does not exist. Creating...";
+
+			if (fs::create_directories(outputDirPath)) {
+				LOG(INFO) << outputDirPath << " directory created";
+			} else {
+				LOG(FATAL) << "Failed to create directory for output files!";
+				std::exit(EXIT_FAILURE);
+			}
+		}
+
+		const fs::path configPath = inputDirPath / (argc > 1 ? std::string(argv[1]) : "base-case.json");
+		const fs::path dataOutputPath = outputDirPath / (argc > 1 ? std::string(argv[1]) : "base-case.json");
+
+		if (!fs::is_regular_file(configPath)) {
+			LOG(FATAL) << configPath << " path does not point to a regular file where config was expected!";
+			std::exit(EXIT_FAILURE);
+		} else {
+			LOG(INFO) << "Config found: " << configPath;
+		}
+
+    string result = readInput(configPath);
 
     json configurationJson = json::parse(result);
     Configuration config = configurationJson.get<Configuration>();
-
-    // LOG(INFO) << "Iterations: " << config.iterations;
-    // LOG(INFO) << "Robot count: " << config.robotCount;
-    // LOG(INFO) << "Initial positions: ";
-    // for (auto &position : config.robotPositions) {
-    //     cout << position.row << " " << position.col << '\n';
-    // }
-    // cout << '\n';
-
-    // LOG(INFO) << "Orders:";
-    // for (auto &order : config.orders) {
-    //     for (auto &p : order) {
-    //         cout << p << " ";
-    //     }
-    //     cout << '\n';
-    // }
 
     setRobotsAmount(config.robotCount);
     setMagazineSize(config.magazineHeight, config.magazineWidth);
@@ -61,7 +67,7 @@ int main(int argc, char const *argv[])
 
     vector<Solution> population;
 
-    for (int i = 0; i < config.iterations; i++) {
+    for (int i = 0; i < config.initialPopulationSize; i++) {
         try {
             vector<vector<Move>> moves = simulate(magazine, robotPositions.data(), robotEndPositions.data(), orders.data());
             population.push_back(Solution{moves});
@@ -70,66 +76,28 @@ int main(int argc, char const *argv[])
         }
     }
 
-    GeneticAlgorithm *algorithm = new GeneticAlgorithm(
-        magazine,
-        population,
-        config.mutationsFromSolution);
+		std::unique_ptr<GeneticAlgorithm> algorithm = 
+				std::make_unique<GeneticAlgorithm>(magazine, population, config.mutationsFromSolution);
 
     algorithm->run(config.generationLimit);
-    Solution *solution = algorithm->bestSolution();
 
-    cout << "generation scores:" << endl;
-    cout << "[";
-    for (std::size_t i = 0; i < algorithm->generationBestScores.size(); i++) {
-        cout << algorithm->generationBestScores[i];
-        if (i != algorithm->generationBestScores.size() - 1)
-            cout << ", ";
-    }
-    cout << "]" << endl;
+		Solution solution = std::move(algorithm->bestSolution());
 
-    // vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
-    // vector<vector<Move>> mutatedSolution = solution;
+    cout << "SOLUTION LENGTH: " << solution.size() << endl;
 
-    // for (int i = 0; i < 5; i++) {
-    //     try {
-    //         mutatedSolution = mutate(magazine, mutatedSolution);
-    //     } catch(...) {
-    //         i -= 1;
-    //     }
-    // }
-    // vector<vector<Move>> mutatedSolution = solution;
+    saveOutput(dataOutputPath, solution.moves, config, *algorithm);
 
-    cout << "SOLUTION LENGTH: " << solution->size() << endl;
-
-    LOG(INFO) << "Converting solution to JSON format";
-    json j = solution->moves;
-
-    saveOutput(dataOutputPath + '/' + configName, solution->moves, config, *algorithm);
-
-    // LOG(INFO) << "Writing solution in JSON format to stdout";
-    // std::cout << std::setw(4) << j << std::endl;
-
-    // for(std::size_t i = 0; i < solution.size(); i++)
-    // {
-    //     for(std::size_t j = 0; j < solution[i].size(); j++)
-    //     {
-    //         cout<< "(" << solution[i][j].position.row << ", " <<solution[i][j].position.col << ", " <<solution[i][j].action<< ") ";
-    //     }
-    //     cout << endl;
-    // }
-
-    delete algorithm;
     return 0;
 }
 
-string readInput(const string &path)
+string readInput(const fs::path &path)
 {
-    LOG(INFO) << "Reading configuration from: " + path;
+    LOG(INFO) << "Reading configuration from: " << path;
     string content;
     ifstream filestream(path, ios::in);
 
     if (!filestream.good()) {
-        LOG(ERROR) << "Failed to open file " + path;
+        LOG(ERROR) << "Failed to open file " << path;
         return "";
     }
 
@@ -144,9 +112,12 @@ string readInput(const string &path)
     return content;
 }
 
-void saveOutput(const string &path, const vector<vector<Move>> &moves, const Configuration &config, const GeneticAlgorithm &alg)
+void saveOutput(const fs::path &path, 
+								const vector<vector<Move>> &moves, 
+								const Configuration &config, 
+								const GeneticAlgorithm &alg)
 {
-    LOG(INFO) << "Saving solutions to " + path;
+    LOG(INFO) << "Saving solutions to " << path;
 
     json j;
     j["solution"] = moves;
@@ -157,7 +128,7 @@ void saveOutput(const string &path, const vector<vector<Move>> &moves, const Con
     ofstream filestream(path, ios::out);
 
     if (!filestream.good()) {
-        LOG(ERROR) << "Failed to open file " + path;
+        LOG(ERROR) << "Failed to open file " << path;
         return;
     }
 
