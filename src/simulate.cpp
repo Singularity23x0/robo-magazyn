@@ -416,7 +416,7 @@ void GeneticAlgorithm::run(int generationsAmount)
 {
     init();
     for (int i = 0; i < generationsAmount; ++i) {
-        newGeneration();
+        newGeneration(i);
     }
 }
 
@@ -426,11 +426,11 @@ void GeneticAlgorithm::init()
     findBestSolution();
 }
 
-void GeneticAlgorithm::newGeneration()
+void GeneticAlgorithm::newGeneration(int generationNumber)
 {   
     mutateSolutions();
     findBestSolution();
-		LOG(INFO) << "Current best: " << topSolution.size();
+		LOG(INFO) << "Generation no. " << generationNumber << ", best: " << topSolution.size();
 
 		auto minInPopulation = std::min_element(
 			std::begin(population),

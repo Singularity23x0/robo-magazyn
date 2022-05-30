@@ -147,7 +147,7 @@ private:
     int mutationsFromSolution;
     void init();
     void findBestSolution();
-    void newGeneration();
+    void newGeneration(int generationNumber);
     void mutateSolutions();
     void pickNewPopulation();
 
