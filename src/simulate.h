@@ -8,7 +8,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-#define ORDER_ITERATOR(x) for (int (x) = 0; x < ORDERS_AMOUNT; ++(x))
+#define ORDER_ITERATOR(x) for (int x = 0; x < ORDERS_AMOUNT; ++x)
 
 enum Action
 {
