@@ -61,7 +61,7 @@ int main(int argc, char const *argv[])
 
     vector<Solution> population;
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < config.iterations; i++) {
         try {
             vector<vector<Move>> moves = simulate(magazine, robotPositions.data(), robotEndPositions.data(), orders.data());
             population.push_back(Solution{moves});

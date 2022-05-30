@@ -1,12 +1,13 @@
 let result, board, orders, ordersCopy, solution
 let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
 let frameLabel, frame = -1
-let ordersLabel, pauseButton;
+let ordersLabel, pauseButton, nextButton, prevButton;
+let context = "FORWARD";
 
 const BOARD_COLOR = "#355070"
 const DARK_BOARD_COLOR = "#3E4756"
 const BG_COLOR = "#6881A4"
-const colors = ["#f87575", "#b9e6ff", "#5c95ff", "#7e6c6c", "eab464"]
+const colors = ["#f87575", "#b9e6ff", "#5c95ff", "#7e6c6c", "#eab464"]
 
 function setup() {
     fetch("../data/out/base-case.json")
@@ -40,15 +41,34 @@ function setup() {
                     noLoop()
                 } else {
                     pauseButton.html("pause")
+                    context = "FORWARD"
                     loop()
                 }
             })
 
-            frame = 0
+            nextButton = createButton("next")
+            prevButton = createButton("prev")
+            
+            nextButton.id("next")
+            prevButton.id("prev")
 
+            nextButton.mousePressed(() => {
+                if (!isLooping() && frame > 0 && frame < solution.length) {
+                    context = "FORWARD"
+                    redraw()
+                }
+            })
+
+            prevButton.mousePressed(() => {
+                if (!isLooping() && frame > 0 && frame < solution.length) {
+                    context = "BACKWARD"
+                    redraw()
+                }
+            })
+
+            frame = 0
             loop()
-        }
-        );
+        });
 }
 
 function ordersToHtml() {
@@ -60,7 +80,6 @@ function ordersToHtml() {
 }
 
 function draw() {
-
     if (frame < 0) {
         noLoop()
         return
@@ -117,9 +136,13 @@ function draw() {
         }
 
     }
-
-    takeProducts(robot_positions)
-    frame++;
+    if (context === "FORWARD") {
+        takeProducts(robot_positions)
+        frame++;
+    } else {
+        returnProducts(robot_positions)
+        --frame;
+    }
 }
 
 function takeProducts(robot_positions) {
@@ -134,4 +157,15 @@ function takeProducts(robot_positions) {
             }
         }
     }
+}
+
+function returnProducts(robot_positions) {
+	for (let robot_i = 0; robot_i < ROBOT_COUNT; ++robot_i) {
+        const action = robot_positions[robot_i]["action"]
+        const row = robot_positions[robot_i]["row"]
+        const col = robot_positions[robot_i]["col"]
+        if (action === "TAKE") {
+            ordersCopy[robot_i].push(board[row][col])
+        }
+	}
 }
