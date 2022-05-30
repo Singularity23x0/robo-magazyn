@@ -9,7 +9,7 @@ const BG_COLOR = "#6881A4"
 const colors = ["#f87575", "#b9e6ff", "#5c95ff", "#7e6c6c", "#eab464"]
 
 function setup() {
-    fetch("./result_new.json")
+    fetch("../data/out/base-case.json")
         .then(response => {
             return response.json()
         })
