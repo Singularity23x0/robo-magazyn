@@ -31,6 +31,31 @@ string readInput(const string &path)
     return content;
 }
 
+void saveOutput(const string &path, const vector<vector<Move>> &moves, Configuration &config)
+{
+    LOG(INFO) << "Saving solutions to " + path;
+
+    json j;
+    j["solution"] = moves;
+    j["board"] = config.magazine;
+    j["orders"] = config.orders;
+
+    ofstream filestream(path, ios::out);
+
+    if (!filestream.good()) {
+        LOG(ERROR) << "Failed to open file " + path;
+        return;
+    }
+
+    istringstream ss(j.dump());
+    string line;
+
+    while (ss >> line) {
+        filestream << line;
+    }
+    filestream.close();
+}
+
 int main(int argc, char const *argv[])
 {
     google::InitGoogleLogging(argv[0]);
@@ -105,10 +130,12 @@ int main(int argc, char const *argv[])
 
     cout << "SOLUTION LENGTH: " << solution->size() << endl;
 
-
     LOG(INFO) << "Converting solution to JSON format";
     json j = solution->moves;
-    LOG(INFO) << "Writing solution in JSON format to stdout";
+
+    saveOutput("data/out/base-case.json", solution->moves, config);
+
+    // LOG(INFO) << "Writing solution in JSON format to stdout";
     // std::cout << std::setw(4) << j << std::endl;
 
     // for(std::size_t i = 0; i < solution.size(); i++)
