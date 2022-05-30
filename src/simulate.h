@@ -97,6 +97,7 @@ struct Configuration {
 	int robotCount;
 	int magazineWidth;
 	int magazineHeight;
+	int generationLimit;
 };
 
 // method names are imposed by the library authors

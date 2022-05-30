@@ -384,7 +384,8 @@ void to_json(json &j, const Configuration &config)
         {"iterations", config.iterations},
         {"robotCount", config.robotCount},
         {"magazineWidth", config.magazineWidth},
-        {"magazineHeight", config.magazineHeight}
+        {"magazineHeight", config.magazineHeight},
+				{"generationLimit", config.generationLimit}
     };
 }
 
@@ -398,6 +399,7 @@ void from_json(const json &j, Configuration &config)
     config.robotCount = j.at("robotCount").get<int>();
     config.magazineWidth = j.at("magazineWidth").get<int>();
     config.magazineHeight = j.at("magazineHeight").get<int>();
+		config.generationLimit = j.at("generationLimit").get<int>();
 }
 
 // ALGORITHM

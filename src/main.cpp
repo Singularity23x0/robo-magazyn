@@ -75,7 +75,7 @@ int main(int argc, char const *argv[])
         population,
         10);
 
-    algorithm->run(50);
+    algorithm->run(config.generationLimit);
     Solution *solution = algorithm->bestSolution();
 
     cout << "generation scores:" << endl;
