@@ -381,7 +381,7 @@ void to_json(json &j, const Configuration &config)
         {"robotPositions", config.robotPositions},
         {"robotEndPositions", config.robotEndPositions},
         {"orders", config.orders},
-        {"iterations", config.iterations},
+        {"initialPopulationSize", config.initialPopulationSize},
         {"robotCount", config.robotCount},
         {"magazineWidth", config.magazineWidth},
         {"magazineHeight", config.magazineHeight},
@@ -396,7 +396,7 @@ void from_json(const json &j, Configuration &config)
     config.robotPositions = j.at("robotPositions").get<vector<Position>>();
     config.robotEndPositions = j.at("robotEndPositions").get<vector<Position>>();
     config.orders = j.at("orders").get<vector<set<int>>>();
-    config.iterations = j.at("iterations").get<int>();
+    config.initialPopulationSize = j.at("initialPopulationSize").get<int>();
     config.robotCount = j.at("robotCount").get<int>();
     config.magazineWidth = j.at("magazineWidth").get<int>();
     config.magazineHeight = j.at("magazineHeight").get<int>();
@@ -504,7 +504,7 @@ void GeneticAlgorithm::pickNewPopulation()
     population = newPopulation;
 }
 
-Solution *GeneticAlgorithm::bestSolution()
+Solution GeneticAlgorithm::bestSolution()
 {
-    return &topSolution;
+    return topSolution;
 }

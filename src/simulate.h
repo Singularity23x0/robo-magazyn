@@ -93,7 +93,7 @@ struct Configuration {
 	vector<Position> robotPositions;
 	vector<Position> robotEndPositions;
 	vector<set<int>> orders;
-	int iterations;
+	int initialPopulationSize;
 	int robotCount;
 	int magazineWidth;
 	int magazineHeight;
@@ -153,6 +153,6 @@ private:
 public:
     GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution);
     void run(int generationsAmount);
-    Solution *bestSolution();
+    Solution bestSolution();
     vector <int> generationBestScores;
 };

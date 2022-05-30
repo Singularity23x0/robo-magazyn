@@ -1,10 +1,10 @@
 {
 	"magazineWidth": 5,
 	"magazineHeight": 6,
-	"iterations": 100,
+	"initialPopulationSize": 20,
 	"robotCount": 4,
-	"generationLimit": 80,
-	"mutationsFromSolution": 15,
+	"generationLimit": 20,
+	"mutationsFromSolution": 10,
 	"robotPositions": [
 		{"row": 0, "col": 0},
 		{"row": 4, "col": 4},
