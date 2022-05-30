@@ -454,7 +454,6 @@ void GeneticAlgorithm::mutateSolutions()
         for (int j = 0; j < mutationsFromSolution; j++) {
             try {
                 vector<vector<Move>> mutated = mutate(magazine, population[i].moves);
-
                 population.push_back(Solution{mutated});
             } catch (...) {
                 j -= 1;
@@ -465,10 +464,13 @@ void GeneticAlgorithm::mutateSolutions()
 
 void GeneticAlgorithm::findBestSolution()
 {
-    for (std::size_t i = 0; i < population.size(); ++i) {
-        if (population[i].size() < topSolution.size())
-            topSolution = population[i];
-    }
+	topSolution = *std::min_element(
+		std::begin(population),
+		std::end(population),
+		[](const Solution &sol1, const Solution &sol2) {
+			return sol1.size() < sol2.size();
+		}
+	);
 }
 
 void GeneticAlgorithm::pickNewPopulation()
