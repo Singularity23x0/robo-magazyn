@@ -31,6 +31,7 @@ struct Position {
     int row, col;
 
     bool operator==(const Position &other);
+		bool operator!=(const Position &other);
     void load(Position *origin);
 };
 
@@ -54,7 +55,7 @@ struct DFSStack {
     void init(Position position);
     void reset(Position position);
     void visit(Position position);
-    bool wasVisited(Position field);
+    inline bool wasVisited(Position field);
     bool initiateLevelReturn();
     void safetyReset();
     void returnOneLevel();

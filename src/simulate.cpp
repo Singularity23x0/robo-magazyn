@@ -14,6 +14,12 @@ bool Position::operator==(const Position &other)
 {
     return row == other.row && col == other.col;
 }
+
+bool Position::operator!=(const Position &other)
+{
+	return row != other.row || col != other.col;
+}
+
 random_device dev;
 mt19937 rng(dev());
 
@@ -34,7 +40,7 @@ void DFSLevel::remove(Position position)
 		std::copy_if(std::begin(neighbors),
 								 std::end(neighbors),
 								 std::back_inserter(newNeighbors),
-								 [this, &position](int i){return !(neighbors[i] == position);});
+								 [&position](Position &pos){return pos != position;});
     neighbors = newNeighbors;
 }
 
@@ -238,7 +244,6 @@ vector<Position> getNeighbors(Position currentPosition)
 
     shuffle(begin(neighbors), end(neighbors), rng);
     return neighbors;
-    return neighbors;
 }
 
 Action defineMove(Position from, Position to)
@@ -257,7 +262,7 @@ Action defineMove(Position from, Position to)
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], Position robotEndPositions[], set<int> orders[])
 {
     srand(time(0));
-    // LOG(INFO) << "Initializing simulation";
+    LOG(INFO) << "Initializing simulation";
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
     bool simulationComplete = false;
@@ -265,7 +270,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     {
         dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
-    // LOG(INFO) << "Running simulation";
+    LOG(INFO) << "Running simulation";
     int iteration = 0;
     int MAX_ITERATIONS = 1000;
     while (!simulationComplete) {
@@ -291,7 +296,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
 
 vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution)
 {
-    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size()-1);
+    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size() - 1);
 
     int from = distribution(rng);
     int to = distribution(rng);
@@ -299,12 +304,9 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     if (from == to) return solution;
     if (from > to) swap(from, to);
 
-    // LOG(INFO) << "Mutation from: " << from << " to: " << to << endl;
-
-    Position *robotPositions = new Position[ORDERS_AMOUNT];
-    Position *robotEndPositions = new Position[ORDERS_AMOUNT];
-
-    set<int> *orders = new set<int>[ORDERS_AMOUNT];
+		std::vector<Position> robotPositions(ORDERS_AMOUNT);
+		std::vector<Position> robotEndPositions(ORDERS_AMOUNT);
+		std::vector<set<int>> orders(ORDERS_AMOUNT);
 
     ORDER_ITERATOR
     {
@@ -323,10 +325,8 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     }
 
 
-    vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
+    vector<vector<Move>> newPart = simulate(magazine, robotPositions.data(), robotEndPositions.data(), orders.data());
     vector<vector<Move>> newSolution(ORDERS_AMOUNT);
-
-    // LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
 
     // TODO: Check correct parts joining - should 'from' and 'to' be included and from which part
     ORDER_ITERATOR
@@ -336,8 +336,6 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
         for (std::size_t j = to; j < solution[0].size(); j++) newSolution[i].push_back(solution[i][j]);
     }
 
-    delete[] robotPositions;
-    delete[] robotEndPositions;
     delete[] orders;
 
     return newSolution;
