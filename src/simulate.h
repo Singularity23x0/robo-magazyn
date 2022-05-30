@@ -135,7 +135,7 @@ namespace nlohmann
 // ALGORITHM
 struct Solution {
     vector<vector<Move>> moves;
-    long size();
+    long size() const;
 };
 
 class GeneticAlgorithm

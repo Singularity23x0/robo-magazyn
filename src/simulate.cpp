@@ -402,7 +402,7 @@ void from_json(const json &j, Configuration &config)
 
 // ALGORITHM
 
-long Solution::size()
+long Solution::size() const
 {
     return moves[0].size();
 }
@@ -434,13 +434,15 @@ void GeneticAlgorithm::newGeneration()
     findBestSolution();
 		LOG(INFO) << "Current best: " << topSolution.size();
 
-    long minInPopulation = population[0].size();
+		auto minInPopulation = std::min_element(
+			std::begin(population),
+			std::end(population),
+			[](const Solution &sol1, const Solution &sol2){
+				return sol1.size() < sol2.size();
+			}
+		);
 
-    for (std::size_t i = 0; i < population.size(); i++) {
-        minInPopulation = min(minInPopulation, population[i].size());
-    }
-
-    generationBestScores.push_back(minInPopulation);
+    generationBestScores.push_back(minInPopulation->size());
 
     pickNewPopulation();
 }
