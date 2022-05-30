@@ -430,7 +430,7 @@ void GeneticAlgorithm::newGeneration(int generationNumber)
 {   
     mutateSolutions();
     findBestSolution();
-		LOG(INFO) << "Generation no. " << generationNumber << ", best: " << topSolution.size();
+		LOG(INFO) << "Generation no. " << std::setw(4) << generationNumber << ", best: " << topSolution.size();
 
 		auto minInPopulation = std::min_element(
 			std::begin(population),
@@ -462,13 +462,11 @@ void GeneticAlgorithm::mutateSolutions()
 
 void GeneticAlgorithm::findBestSolution()
 {
-	topSolution = *std::min_element(
-		std::begin(population),
-		std::end(population),
-		[](const Solution &sol1, const Solution &sol2) {
-			return sol1.size() < sol2.size();
+	for (std::size_t i; i < population.size(); ++i) {
+		if (population[i].size() < topSolution.size()) {
+			topSolution = population[i];
 		}
-	);
+	}
 }
 
 void GeneticAlgorithm::pickNewPopulation()
