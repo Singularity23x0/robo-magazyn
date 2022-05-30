@@ -332,8 +332,8 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     ORDER_ITERATOR
     {
         for (int j = 0; j < from; j++) newSolution[i].push_back(solution[i][j]);
-        for (int j = 0; j < newPart[0].size(); j++) newSolution[i].push_back(newPart[i][j]);
-        for (int j = to; j < solution[0].size(); j++) newSolution[i].push_back(solution[i][j]);
+        for (std::size_t j = 0; j < newPart[0].size(); j++) newSolution[i].push_back(newPart[i][j]);
+        for (std::size_t j = to; j < solution[0].size(); j++) newSolution[i].push_back(solution[i][j]);
     }
 
     delete[] robotPositions;
@@ -440,7 +440,7 @@ void GeneticAlgorithm::newGeneration()
 
     long minInPopulation = population[0].size();
 
-    for (int i = 0; i < population.size(); i++) {
+    for (std::size_t i = 0; i < population.size(); i++) {
         minInPopulation = min(minInPopulation, population[i].size());
     }
 
@@ -467,7 +467,7 @@ void GeneticAlgorithm::mutateSolutions()
 
 void GeneticAlgorithm::findBestSolution()
 {
-    for (int i = 0; i < population.size(); ++i) {
+    for (std::size_t i = 0; i < population.size(); ++i) {
         if (population[i].size() < topSolution.size())
             topSolution = population[i];
     }
@@ -483,18 +483,18 @@ void GeneticAlgorithm::pickNewPopulation()
     vector<int> weights;
     vector<bool> used(population.size(), false);
 
-    for (int i = 0; i < population.size(); ++i) {
+    for (std::size_t i = 0; i < population.size(); ++i) {
         sizes.push_back(population[i].size());
         maxSize = max(maxSize, population[i].size());
         minSize = min(minSize, population[i].size());
     }
     maxSize++;
-    for (int i = 0; i < sizes.size(); ++i) {
+    for (std::size_t i = 0; i < sizes.size(); ++i) {
         weights.push_back(maxSize - sizes[i]);
     }
 
     discrete_distribution<long> dist{weights.begin(), weights.end()};
-    while (newPopulation.size() < targetSize) {
+    while ((int)newPopulation.size() < targetSize) {
         int i = dist(rng);
         if (!used[i]) {
             used[i] = true;
