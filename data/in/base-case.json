@@ -3,6 +3,8 @@
 	"magazineHeight": 6,
 	"iterations": 100,
 	"robotCount": 4,
+	"generationLimit": 80,
+	"mutationsFromSolution": 15,
 	"robotPositions": [
 		{"row": 0, "col": 0},
 		{"row": 4, "col": 4},

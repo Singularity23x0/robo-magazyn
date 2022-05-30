@@ -73,14 +73,14 @@ int main(int argc, char const *argv[])
     GeneticAlgorithm *algorithm = new GeneticAlgorithm(
         magazine,
         population,
-        10);
+        config.mutationsFromSolution);
 
-    algorithm->run(50);
+    algorithm->run(config.generationLimit);
     Solution *solution = algorithm->bestSolution();
 
     cout << "generation scores:" << endl;
     cout << "[";
-    for (int i = 0; i < algorithm->generationBestScores.size(); i++) {
+    for (std::size_t i = 0; i < algorithm->generationBestScores.size(); i++) {
         cout << algorithm->generationBestScores[i];
         if (i != algorithm->generationBestScores.size() - 1)
             cout << ", ";
