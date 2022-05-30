@@ -483,6 +483,7 @@ void GeneticAlgorithm::pickNewPopulation()
     vector<int> weights;
     vector<bool> used(population.size(), false);
 
+		// TODO: consider using minmax algorithm from stdlib
     for (std::size_t i = 0; i < population.size(); ++i) {
         sizes.push_back(population[i].size());
         maxSize = max(maxSize, population[i].size());
