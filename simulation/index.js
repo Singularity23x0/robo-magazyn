@@ -1,7 +1,7 @@
 let result, board, orders, ordersCopy, solution
 let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
 let frameLabel, frame = -1
-let ordersLabel, pauseButton;
+let ordersLabel, pauseButton, nextButton, prevButton;
 
 const BOARD_COLOR = "#355070"
 const DARK_BOARD_COLOR = "#3E4756"
@@ -44,11 +44,29 @@ function setup() {
                 }
             })
 
-            frame = 0
+						nextButton = createButton("next")
+						prevButton = createButton("prev")
+						
+						nextButton.id("next")
+						prevButton.id("prev")
 
+            nextButton.mousePressed(() => {
+                if (!isLooping() && frame > 0 && frame < solution.length) {
+                    redraw()
+                }
+            })
+            nextButton.id = "next-button"
+
+            prevButton.mousePressed(() => {
+                if (!isLooping() && frame > 0 && frame < solution.length) {
+                    frame -= 2
+                    redraw()
+                }
+            })
+
+            frame = 0
             loop()
-        }
-        );
+        });
 }
 
 function ordersToHtml() {
@@ -60,7 +78,6 @@ function ordersToHtml() {
 }
 
 function draw() {
-
     if (frame < 0) {
         noLoop()
         return

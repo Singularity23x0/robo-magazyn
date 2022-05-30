@@ -34,3 +34,13 @@ button {
     right: 0%;
     transform: translate(0, -100%);
 }
+
+#prev {
+    top: 40%;
+    transform: translate(0, -80%);
+}
+
+#next {
+    top: 60%;
+    transform: translate(0, -80%);
+}
