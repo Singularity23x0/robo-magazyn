@@ -46,11 +46,11 @@ function setup() {
                 }
             })
 
-						nextButton = createButton("next")
-						prevButton = createButton("prev")
-						
-						nextButton.id("next")
-						prevButton.id("prev")
+            nextButton = createButton("next")
+            prevButton = createButton("prev")
+            
+            nextButton.id("next")
+            prevButton.id("prev")
 
             nextButton.mousePressed(() => {
                 if (!isLooping() && frame > 0 && frame < solution.length) {
@@ -58,7 +58,6 @@ function setup() {
                     redraw()
                 }
             })
-            nextButton.id = "next-button"
 
             prevButton.mousePressed(() => {
                 if (!isLooping() && frame > 0 && frame < solution.length) {
