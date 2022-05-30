@@ -152,4 +152,5 @@ public:
     GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution);
     void run(int generationsAmount);
     Solution *bestSolution();
+    vector <int> generationBestScores;
 };

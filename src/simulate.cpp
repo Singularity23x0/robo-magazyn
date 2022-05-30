@@ -433,6 +433,15 @@ void GeneticAlgorithm::newGeneration()
     mutateSolutions();
     findBestSolution();
     cout << "Current best: " << topSolution.size() << endl;
+
+    long minInPopulation = population[0].size();
+
+    for (int i = 0; i < population.size(); i++) {
+        minInPopulation = min(minInPopulation, population[i].size());
+    }
+
+    generationBestScores.push_back(minInPopulation);
+
     pickNewPopulation();
 }
 
