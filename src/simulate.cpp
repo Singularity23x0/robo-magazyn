@@ -462,7 +462,7 @@ void GeneticAlgorithm::mutateSolutions()
 
 void GeneticAlgorithm::findBestSolution()
 {
-	for (std::size_t i; i < population.size(); ++i) {
+	for (std::size_t i = 0; i < population.size(); ++i) {
 		if (population[i].size() < topSolution.size()) {
 			topSolution = population[i];
 		}
