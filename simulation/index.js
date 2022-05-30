@@ -59,6 +59,7 @@ function setup() {
 
             prevButton.mousePressed(() => {
                 if (!isLooping() && frame > 0 && frame < solution.length) {
+                    returnProducts(frame)
                     frame -= 2
                     redraw()
                 }
@@ -150,5 +151,20 @@ function takeProducts(robot_positions) {
                 ordersCopy[robot_i].splice(product_index, 1)
             }
         }
-    }
+    }                orders
+}
+
+function returnProducts(currentFrame) {
+    robot_positions = solution[currentFrame];
+	for (let robot_i = 0; robot_i < ROBOT_COUNT; ++robot_i) {
+        const action = robot_positions[robot_i]["action"]
+        const row = robot_positions[robot_i]["row"]
+        const col = robot_positions[robot_i]["col"]
+        if (action === "TAKE") {
+            let product_index = ordersCopy[robot_i].indexOf(board[row][col])
+            if (product_index != -1) {
+                ordersCopy[robot_i].push(board[row][col])
+            }
+        }
+	}
 }
