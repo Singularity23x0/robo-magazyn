@@ -10,52 +10,8 @@
 using namespace std;
 using json = nlohmann::json;
 
-string readInput(const string &path)
-{
-    LOG(INFO) << "Reading configuration from: " + path;
-    string content;
-    ifstream filestream(path, ios::in);
-
-    if (!filestream.good()) {
-        LOG(ERROR) << "Failed to open file " + path;
-        return "";
-    }
-
-    string line;
-    while (!filestream.eof()) {
-        getline(filestream, line);
-        content.append(line + '\n');
-        line.clear();
-    }
-
-    filestream.close();
-    return content;
-}
-
-void saveOutput(const string &path, const vector<vector<Move>> &moves, Configuration &config)
-{
-    LOG(INFO) << "Saving solutions to " + path;
-
-    json j;
-    j["solution"] = moves;
-    j["board"] = config.magazine;
-    j["orders"] = config.orders;
-
-    ofstream filestream(path, ios::out);
-
-    if (!filestream.good()) {
-        LOG(ERROR) << "Failed to open file " + path;
-        return;
-    }
-
-    istringstream ss(j.dump());
-    string line;
-
-    while (ss >> line) {
-        filestream << line;
-    }
-    filestream.close();
-}
+string readInput(const string &path);
+void saveOutput(const string &path, const vector<vector<Move>> &moves, Configuration &config);
 
 int main(int argc, char const *argv[])
 {
@@ -155,4 +111,51 @@ int main(int argc, char const *argv[])
 
     delete algorithm;
     return 0;
+}
+
+string readInput(const string &path)
+{
+    LOG(INFO) << "Reading configuration from: " + path;
+    string content;
+    ifstream filestream(path, ios::in);
+
+    if (!filestream.good()) {
+        LOG(ERROR) << "Failed to open file " + path;
+        return "";
+    }
+
+    string line;
+    while (!filestream.eof()) {
+        getline(filestream, line);
+        content.append(line + '\n');
+        line.clear();
+    }
+
+    filestream.close();
+    return content;
+}
+
+void saveOutput(const string &path, const vector<vector<Move>> &moves, Configuration &config)
+{
+    LOG(INFO) << "Saving solutions to " + path;
+
+    json j;
+    j["solution"] = moves;
+    j["board"] = config.magazine;
+    j["orders"] = config.orders;
+
+    ofstream filestream(path, ios::out);
+
+    if (!filestream.good()) {
+        LOG(ERROR) << "Failed to open file " + path;
+        return;
+    }
+
+    istringstream ss(j.dump());
+    string line;
+
+    while (ss >> line) {
+        filestream << line;
+    }
+    filestream.close();
 }
