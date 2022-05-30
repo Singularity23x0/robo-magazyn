@@ -12,6 +12,7 @@ using json = nlohmann::json;
 
 string readInput(const string &path)
 {
+    LOG(INFO) << "Reading configuration from: " + path;
     string content;
     ifstream filestream(path, ios::in);
 
@@ -61,13 +62,19 @@ int main(int argc, char const *argv[])
     google::InitGoogleLogging(argv[0]);
     fLB::FLAGS_logtostderr = true;
 
-    const string datapath = "data/in";
-
     LOG(INFO) << "Execution started";
 
-    LOG(INFO) << "Reading json configuration from " + datapath;
+    const string dataInputPath = "data/in";
+    const string dataOutputPath = "data/out";
 
-    string result = readInput(datapath + "/base-case.json");
+    string configName;
+    if (argc > 1) {
+        configName = string(argv[1]);
+    } else {
+        configName = "base-case.json";
+    }
+
+    string result = readInput(dataInputPath + '/' + configName);
 
     json configurationJson = json::parse(result);
     Configuration config = configurationJson.get<Configuration>();
@@ -87,7 +94,6 @@ int main(int argc, char const *argv[])
     //     }
     //     cout << '\n';
     // }
-
 
     setRobotsAmount(config.robotCount);
     setMagazineSize(config.magazineHeight, config.magazineWidth);
@@ -133,7 +139,7 @@ int main(int argc, char const *argv[])
     LOG(INFO) << "Converting solution to JSON format";
     json j = solution->moves;
 
-    saveOutput("data/out/base-case.json", solution->moves, config);
+    saveOutput(dataOutputPath + '/' + configName, solution->moves, config);
 
     // LOG(INFO) << "Writing solution in JSON format to stdout";
     // std::cout << std::setw(4) << j << std::endl;
