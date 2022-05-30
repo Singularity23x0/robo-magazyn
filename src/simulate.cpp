@@ -31,10 +31,10 @@ bool DFSLevel::empty()
 void DFSLevel::remove(Position position)
 {
     vector<Position> newNeighbors;
-    for (std::size_t i = 0; i < neighbors.size(); i++)
-        if (!(neighbors[i] == position)) {
-            newNeighbors.push_back(neighbors[i]);
-        }
+		std::copy_if(std::begin(neighbors),
+								 std::end(neighbors),
+								 std::back_inserter(newNeighbors),
+								 [this, &position](int i){return !(neighbors[i] == position);});
     neighbors = newNeighbors;
 }
 
