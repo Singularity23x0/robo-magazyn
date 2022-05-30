@@ -46,6 +46,8 @@ int main(int argc, char const *argv[])
 
     vector<Solution> population;
 
+		return 0;
+
     for (int i = 0; i < 20; i++) {
         try {
             vector <vector <Move>> moves = simulate(magazine, robotPositions, robotEndPositions, orders);

@@ -349,7 +349,8 @@ void to_json(json &j, const Move &move)
     j = json{
         {"row", move.position.row},
         {"col", move.position.col},
-        {"action", move.action}};
+        {"action", move.action}
+    };
 }
 
 void from_json(const json &j, Move &move)
@@ -357,6 +358,20 @@ void from_json(const json &j, Move &move)
     move.position.row = j.at("row").get<int>();
     move.position.col = j.at("col").get<int>();
     move.action = j.at("action").get<Action>();
+}
+
+void to_json(json &j, const Position &position)
+{
+	j = json {
+		{"row", position.row},
+		{"col", position.col}
+	};
+}
+
+void from_json(const json &j, Position &position)
+{
+	position.row = j.at("row").get<int>();
+	position.col = j.at("col").get<int>();
 }
 
 // ALGORITHM
