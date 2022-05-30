@@ -98,6 +98,7 @@ struct Configuration {
 	int magazineWidth;
 	int magazineHeight;
 	int generationLimit;
+	int mutationsFromSolution;
 };
 
 // method names are imposed by the library authors

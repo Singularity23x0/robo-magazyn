@@ -73,7 +73,7 @@ int main(int argc, char const *argv[])
     GeneticAlgorithm *algorithm = new GeneticAlgorithm(
         magazine,
         population,
-        10);
+        config.mutationsFromSolution);
 
     algorithm->run(config.generationLimit);
     Solution *solution = algorithm->bestSolution();
