@@ -1,9 +1,9 @@
+#include <filesystem>
+#include <fstream>
 #include <glog/logging.h>
 #include <iostream>
-#include <string>
-#include <fstream>
-#include <filesystem>
 #include <nlohmann/json.hpp>
+#include <string>
 
 #include "simulate.h"
 
@@ -58,12 +58,12 @@ int main(int argc, char const *argv[])
     vector<Position> robotPositions = config.robotPositions;
     vector<Position> robotEndPositions = config.robotEndPositions;
     vector<set<int>> orders = config.orders;
-    
+
     vector<Solution> population;
 
     for (int i = 0; i < config.iterations; i++) {
         try {
-            vector <vector <Move>> moves = simulate(magazine, robotPositions.data(), robotEndPositions.data(), orders.data());
+            vector<vector<Move>> moves = simulate(magazine, robotPositions.data(), robotEndPositions.data(), orders.data());
             population.push_back(Solution{moves});
         } catch (...) {
             i--;
@@ -77,6 +77,15 @@ int main(int argc, char const *argv[])
 
     algorithm->run(50);
     Solution *solution = algorithm->bestSolution();
+
+    cout << "generation scores:" << endl;
+    cout << "[";
+    for (int i = 0; i < algorithm->generationBestScores.size(); i++) {
+        cout << algorithm->generationBestScores[i];
+        if (i != algorithm->generationBestScores.size() - 1)
+            cout << ", ";
+    }
+    cout << "]" << endl;
 
     // vector<vector<Move>> solution = simulate(magazine, robotPositions, robotEndPositions, orders);
     // vector<vector<Move>> mutatedSolution = solution;
