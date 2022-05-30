@@ -2,6 +2,7 @@ let result, board, orders, ordersCopy, solution
 let ROW_COUNT, COL_COUNT, ROBOT_COUNT, SCALE
 let frameLabel, frame = -1
 let ordersLabel, pauseButton, nextButton, prevButton;
+let context = "FORWARD";
 
 const BOARD_COLOR = "#355070"
 const DARK_BOARD_COLOR = "#3E4756"
@@ -40,6 +41,7 @@ function setup() {
                     noLoop()
                 } else {
                     pauseButton.html("pause")
+                    context = "FORWARD"
                     loop()
                 }
             })
@@ -52,6 +54,7 @@ function setup() {
 
             nextButton.mousePressed(() => {
                 if (!isLooping() && frame > 0 && frame < solution.length) {
+                    context = "FORWARD"
                     redraw()
                 }
             })
@@ -59,8 +62,7 @@ function setup() {
 
             prevButton.mousePressed(() => {
                 if (!isLooping() && frame > 0 && frame < solution.length) {
-                    returnProducts(frame)
-                    frame -= 2
+                    context = "BACKWARD"
                     redraw()
                 }
             })
@@ -135,9 +137,13 @@ function draw() {
         }
 
     }
-
-    takeProducts(robot_positions)
-    frame++;
+    if (context === "FORWARD") {
+        takeProducts(robot_positions)
+        frame++;
+    } else {
+        returnProducts(robot_positions)
+        --frame;
+    }
 }
 
 function takeProducts(robot_positions) {
@@ -151,11 +157,10 @@ function takeProducts(robot_positions) {
                 ordersCopy[robot_i].splice(product_index, 1)
             }
         }
-    }                orders
+    }
 }
 
-function returnProducts(currentFrame) {
-    robot_positions = solution[currentFrame];
+function returnProducts(robot_positions) {
 	for (let robot_i = 0; robot_i < ROBOT_COUNT; ++robot_i) {
         const action = robot_positions[robot_i]["action"]
         const row = robot_positions[robot_i]["row"]
