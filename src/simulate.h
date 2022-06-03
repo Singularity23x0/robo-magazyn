@@ -154,4 +154,6 @@ public:
     void run(int generationsAmount);
     Solution *bestSolution();
     vector<int> generationBestScores;
+    vector<int> generationWorstScores;
+    vector<int> generationMedianScores;
 };

@@ -153,6 +153,8 @@ void saveOutput(const string &path, const vector<vector<Move>> &moves, const Con
     j["board"] = config.magazine;
     j["orders"] = config.orders;
     j["best-in-generation"] = alg.generationBestScores;
+    j["worst-in-generation"] = alg.generationWorstScores;
+    j["median-in-generation"] = alg.generationMedianScores;
 
     ofstream filestream(path, ios::out);
 

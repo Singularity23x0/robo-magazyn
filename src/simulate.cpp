@@ -435,13 +435,16 @@ void GeneticAlgorithm::newGeneration()
     findBestSolution();
     LOG(INFO) << "Current best: " << topSolution.size();
 
-    long minInPopulation = population[0].size();
-
+    vector <int> scores;
     for (std::size_t i = 0; i < population.size(); i++) {
-        minInPopulation = min(minInPopulation, population[i].size());
+       scores.push_back(population[i].size());
     }
 
-    generationBestScores.push_back(minInPopulation);
+    nth_element(scores.begin(), scores.begin() + scores.size()/2, scores.end());
+
+    generationBestScores.push_back(*min_element(scores.begin(), scores.end()));
+    generationWorstScores.push_back(*max_element(scores.begin(), scores.end()));
+    generationMedianScores.push_back(scores[scores.size()/2]);
 
     pickNewPopulation();
 }
