@@ -6,8 +6,8 @@ params = {
     "magazineHeight": 30,
     "populationCount": 10,
     "robotCount": 4,
-    "generationLimit": 50,
-    "mutationsFromSolution": 5,
+    "generationLimit": 100,
+    "mutationsFromSolution": 10,
     "robotPositions": [
         {"row": 0, "col": 0},
         {"row": 14, "col": 24},
