@@ -1,7 +1,7 @@
 {
 	"magazineWidth": 5,
 	"magazineHeight": 6,
-	"iterations": 100,
+	"populationCount": 10,
 	"robotCount": 4,
 	"generationLimit": 80,
 	"mutationsFromSolution": 15,

@@ -89,16 +89,16 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
 vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution);
 
 struct Configuration {
-	vector<vector<int>> magazine;
-	vector<Position> robotPositions;
-	vector<Position> robotEndPositions;
-	vector<set<int>> orders;
-	int iterations;
-	int robotCount;
-	int magazineWidth;
-	int magazineHeight;
-	int generationLimit;
-	int mutationsFromSolution;
+    vector<vector<int>> magazine;
+    vector<Position> robotPositions;
+    vector<Position> robotEndPositions;
+    vector<set<int>> orders;
+    int populationCount;
+    int robotCount;
+    int magazineWidth;
+    int magazineHeight;
+    int generationLimit;
+    int mutationsFromSolution;
 };
 
 // method names are imposed by the library authors
@@ -123,9 +123,8 @@ namespace nlohmann
         static void from_json(const json &j, std::vector<std::vector<T>> &vec)
         {
             // not required for now
-						using nlohmann::from_json;
-						from_json(j, vec);
-
+            using nlohmann::from_json;
+            from_json(j, vec);
         }
     };
 }// namespace nlohmann
@@ -154,5 +153,5 @@ public:
     GeneticAlgorithm(vector<vector<int>> &magazine, vector<Solution> population, int mutationsFromSolution);
     void run(int generationsAmount);
     Solution *bestSolution();
-    vector <int> generationBestScores;
+    vector<int> generationBestScores;
 };

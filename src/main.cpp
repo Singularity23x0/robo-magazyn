@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
     if (argc > 1) {
         configName = string(argv[1]);
     } else {
-        configName = "base-case.json";
+        configName = "test-case.json";
     }
 
     string result = readInput(dataInputPath + '/' + configName);
@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
     json configurationJson = json::parse(result);
     Configuration config = configurationJson.get<Configuration>();
 
-    // LOG(INFO) << "Iterations: " << config.iterations;
+    // LOG(INFO) << "Iterations: " << config.populationCount;
     // LOG(INFO) << "Robot count: " << config.robotCount;
     // LOG(INFO) << "Initial positions: ";
     // for (auto &position : config.robotPositions) {
@@ -61,7 +61,7 @@ int main(int argc, char const *argv[])
 
     vector<Solution> population;
 
-    for (int i = 0; i < config.iterations; i++) {
+    for (int i = 0; i < config.populationCount; i++) {
         try {
             vector<vector<Move>> moves = simulate(magazine, robotPositions.data(), robotEndPositions.data(), orders.data());
             population.push_back(Solution{moves});
@@ -152,7 +152,7 @@ void saveOutput(const string &path, const vector<vector<Move>> &moves, const Con
     j["solution"] = moves;
     j["board"] = config.magazine;
     j["orders"] = config.orders;
-		j["best-in-generation"] = alg.generationBestScores;
+    j["best-in-generation"] = alg.generationBestScores;
 
     ofstream filestream(path, ios::out);
 

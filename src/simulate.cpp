@@ -193,7 +193,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
+    waited = move.action == WAIT;// to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
@@ -291,7 +291,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
 
 vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> solution)
 {
-    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size()-1);
+    uniform_int_distribution<mt19937::result_type> distribution(0, solution[0].size() - 1);
 
     int from = distribution(rng);
     int to = distribution(rng);
@@ -349,8 +349,7 @@ void to_json(json &j, const Move &move)
     j = json{
         {"row", move.position.row},
         {"col", move.position.col},
-        {"action", move.action}
-    };
+        {"action", move.action}};
 }
 
 void from_json(const json &j, Move &move)
@@ -362,32 +361,30 @@ void from_json(const json &j, Move &move)
 
 void to_json(json &j, const Position &position)
 {
-	j = json {
-		{"row", position.row},
-		{"col", position.col}
-	};
+    j = json{
+        {"row", position.row},
+        {"col", position.col}};
 }
 
 void from_json(const json &j, Position &position)
 {
-	position.row = j.at("row").get<int>();
-	position.col = j.at("col").get<int>();
+    position.row = j.at("row").get<int>();
+    position.col = j.at("col").get<int>();
 }
 
 void to_json(json &j, const Configuration &config)
 {
-    j = json {
+    j = json{
         {"magazine", config.magazine},
         {"robotPositions", config.robotPositions},
         {"robotEndPositions", config.robotEndPositions},
         {"orders", config.orders},
-        {"iterations", config.iterations},
+        {"populationCount", config.populationCount},
         {"robotCount", config.robotCount},
         {"magazineWidth", config.magazineWidth},
         {"magazineHeight", config.magazineHeight},
-				{"generationLimit", config.generationLimit},
-				{"mutationsFromSolution", config.mutationsFromSolution}
-    };
+        {"generationLimit", config.generationLimit},
+        {"mutationsFromSolution", config.mutationsFromSolution}};
 }
 
 void from_json(const json &j, Configuration &config)
@@ -396,12 +393,12 @@ void from_json(const json &j, Configuration &config)
     config.robotPositions = j.at("robotPositions").get<vector<Position>>();
     config.robotEndPositions = j.at("robotEndPositions").get<vector<Position>>();
     config.orders = j.at("orders").get<vector<set<int>>>();
-    config.iterations = j.at("iterations").get<int>();
+    config.populationCount = j.at("populationCount").get<int>();
     config.robotCount = j.at("robotCount").get<int>();
     config.magazineWidth = j.at("magazineWidth").get<int>();
     config.magazineHeight = j.at("magazineHeight").get<int>();
-		config.generationLimit = j.at("generationLimit").get<int>();
-		config.mutationsFromSolution = j.at("mutationsFromSolution").get<int>();
+    config.generationLimit = j.at("generationLimit").get<int>();
+    config.mutationsFromSolution = j.at("mutationsFromSolution").get<int>();
 }
 
 // ALGORITHM
@@ -433,10 +430,10 @@ void GeneticAlgorithm::init()
 }
 
 void GeneticAlgorithm::newGeneration()
-{   
+{
     mutateSolutions();
     findBestSolution();
-		LOG(INFO) << "Current best: " << topSolution.size();
+    LOG(INFO) << "Current best: " << topSolution.size();
 
     long minInPopulation = population[0].size();
 
@@ -494,7 +491,7 @@ void GeneticAlgorithm::pickNewPopulation()
     }
 
     discrete_distribution<long> dist{weights.begin(), weights.end()};
-    while ((int)newPopulation.size() < targetSize) {
+    while ((int) newPopulation.size() < targetSize) {
         int i = dist(rng);
         if (!used[i]) {
             used[i] = true;
