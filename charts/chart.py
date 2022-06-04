@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
+
 with open("data/out/test-case-p20.json", "r") as f:
     data = json.loads(f.read())
 
