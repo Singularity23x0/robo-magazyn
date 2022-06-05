@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import json
 
 
-with open("data/out/test-case-p20.json", "r") as f:
+with open("data/out/test-case-2-p16-c16.json", "r") as f:
     data = json.loads(f.read())
 
 bests = data["best-in-generation"]
