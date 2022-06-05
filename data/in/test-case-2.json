@@ -3,7 +3,7 @@
     "magazineHeight": 15,
     "populationCount": 10,
     "robotCount": 4,
-    "generationLimit": 100,
+    "generationLimit": 5000,
     "mutationsFromSolution": 10,
     "orders": [
         [
