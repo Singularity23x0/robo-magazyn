@@ -46,25 +46,25 @@ function setup() {
                 }
             })
 
-            nextButton = createButton("next")
-            prevButton = createButton("prev")
+            // nextButton = createButton("next")
+            // prevButton = createButton("prev")
             
-            nextButton.id("next")
-            prevButton.id("prev")
+            // nextButton.id("next")
+            // prevButton.id("prev")
 
-            nextButton.mousePressed(() => {
-                if (!isLooping() && frame > 0 && frame < solution.length) {
-                    context = "FORWARD"
-                    redraw()
-                }
-            })
+            // nextButton.mousePressed(() => {
+            //     if (!isLooping() && frame > 0 && frame < solution.length) {
+            //         context = "FORWARD"
+            //         redraw()
+            //     }
+            // })
 
-            prevButton.mousePressed(() => {
-                if (!isLooping() && frame > 0 && frame < solution.length) {
-                    context = "BACKWARD"
-                    redraw()
-                }
-            })
+            // prevButton.mousePressed(() => {
+            //     if (!isLooping() && frame > 0 && frame < solution.length) {
+            //         context = "BACKWARD"
+            //         redraw()
+            //     }
+            // })
 
             frame = 0
             loop()

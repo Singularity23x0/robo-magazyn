@@ -1,8 +1,23 @@
 import matplotlib.pyplot as plt
+import json
 
-data = [40, 37, 45, 45, 48, 42, 47, 50, 50, 34, 37, 37, 39, 53, 56, 49, 55, 48, 64, 47, 56, 47, 47, 42, 42, 41, 44, 44, 44, 42, 42, 42, 41, 41, 54, 42, 57, 57, 43, 31, 51, 44, 54, 42, 54, 31, 46, 60, 45, 49]
 
-plt.plot(data, c="#4E6E58")
+with open("data/out/test-case-2.json", "r") as f:
+    data = json.loads(f.read())
+
+bests = data["best-in-generation"]
+all_time_bests = [min(bests[:i+1]) for i in range(len(bests))]
+
+worsts = data["worst-in-generation"]
+medians = data["median-in-generation"]
+
+print("best:", min(bests), "worst:", max(worsts))
+
+plt.plot(bests, c="#7D82B8", lw=3, label="best")
+plt.plot(worsts, lw=3, c="#EF798A", label="worst")
+plt.plot(medians, lw=3, c="#F7A9A8", label="median")
+plt.plot(all_time_bests, c="#613F75", lw=3, label="all time best")
+
 plt.xlabel("generation")
-plt.ylabel("minimum solution length in the population")
+plt.legend()
 plt.show()
