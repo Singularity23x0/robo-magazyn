@@ -159,7 +159,7 @@ Move Robot::makeMove()
 
     if (orderComplete && currentPosition == endPosition) {
         reachedEnd = true;
-        move.action = WAIT;// stay in the endPosition
+        move.action = WAIT; // stay in the endPosition
     } else if (it != order.end()) {
         // TAKE action
         move.action = TAKE;
@@ -193,7 +193,7 @@ Move Robot::makeMove()
 
     setPosition(nextPosition);
     sendToTurnInIfComplete();
-    waited = move.action == WAIT;// to avoid waiting for a taken position for more than two iterations
+    waited = move.action == WAIT; // to avoid waiting for a taken position for more than two iterations
     return move;
 }
 
@@ -257,7 +257,7 @@ Action defineMove(Position from, Position to)
 vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPositions[], Position robotEndPositions[], set<int> orders[])
 {
     srand(time(0));
-    // LOG(INFO) << "Initializing simulation";
+
     vector<vector<Move>> simulation(ORDERS_AMOUNT);
     vector<Robot> dfs(ORDERS_AMOUNT);
     bool simulationComplete = false;
@@ -265,7 +265,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
     {
         dfs[i].init(i, magazine, robotPositions, robotEndPositions[i], orders[i]);
     }
-    // LOG(INFO) << "Running simulation";
+
     int iteration = 0;
     int MAX_ITERATIONS = 1000;
     while (!simulationComplete) {
@@ -275,6 +275,7 @@ vector<vector<Move>> simulate(vector<vector<int>> &magazine, Position robotPosit
         {
             simulation[i].push_back(dfs[i].makeMove());
         }
+
         // checking if all simulations are complete
         simulationComplete = true;
         ORDER_ITERATOR
@@ -299,7 +300,6 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     if (from == to) return solution;
     if (from > to) swap(from, to);
 
-    // LOG(INFO) << "Mutation from: " << from << " to: " << to << endl;
 
     Position *robotPositions = new Position[ORDERS_AMOUNT];
     Position *robotEndPositions = new Position[ORDERS_AMOUNT];
@@ -326,9 +326,6 @@ vector<vector<Move>> mutate(vector<vector<int>> &magazine, vector<vector<Move>> 
     vector<vector<Move>> newPart = simulate(magazine, robotPositions, robotEndPositions, orders);
     vector<vector<Move>> newSolution(ORDERS_AMOUNT);
 
-    // LOG(INFO) << "New fragment length: " << newPart[0].size() << ", previously: " << to - from + 1 << endl;
-
-    // TODO: Check correct parts joining - should 'from' and 'to' be included and from which part
     ORDER_ITERATOR
     {
         for (int j = 0; j < from; j++) newSolution[i].push_back(solution[i][j]);
